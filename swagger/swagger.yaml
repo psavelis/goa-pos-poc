@@ -85,12 +85,6 @@ paths:
         name: TransactionId
         required: true
         type: string
-      - description: Detailed information regarding a POS purchase operation
-        in: body
-        name: payload
-        required: true
-        schema:
-          $ref: '#/definitions/PurchasePayload'
       produces:
       - vnd.application/pos.purchases
       responses:

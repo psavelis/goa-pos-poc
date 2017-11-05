@@ -92,11 +92,11 @@ func CreatePurchaseCreated(t goatest.TInterface, ctx context.Context, service *g
 	return rw
 }
 
-// FindPurchaseOK runs the method Find of the given controller with the given parameters and payload.
+// FindPurchaseOK runs the method Find of the given controller with the given parameters.
 // It returns the response writer so it's possible to inspect the response headers and the media type struct written to the response.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func FindPurchaseOK(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.PurchaseController, transactionID string, payload *app.PurchasePayload) (http.ResponseWriter, *app.Purchase) {
+func FindPurchaseOK(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.PurchaseController, transactionID string) (http.ResponseWriter, *app.Purchase) {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -114,25 +114,14 @@ func FindPurchaseOK(t goatest.TInterface, ctx context.Context, service *goa.Serv
 		service.Encoder.Register(newEncoder, "*/*")
 	}
 
-	// Validate payload
-	err := payload.Validate()
-	if err != nil {
-		e, ok := err.(goa.ServiceError)
-		if !ok {
-			panic(err) // bug
-		}
-		t.Errorf("unexpected payload validation error: %+v", e)
-		return nil, nil
-	}
-
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
 		Path: fmt.Sprintf("/purchases/%v", transactionID),
 	}
-	req, _err := http.NewRequest("GET", u.String(), nil)
-	if _err != nil {
-		panic("invalid test " + _err.Error()) // bug
+	req, err := http.NewRequest("GET", u.String(), nil)
+	if err != nil {
+		panic("invalid test " + err.Error()) // bug
 	}
 	prms := url.Values{}
 	prms["TransactionId"] = []string{fmt.Sprintf("%v", transactionID)}
@@ -140,32 +129,31 @@ func FindPurchaseOK(t goatest.TInterface, ctx context.Context, service *goa.Serv
 		ctx = context.Background()
 	}
 	goaCtx := goa.NewContext(goa.WithAction(ctx, "PurchaseTest"), rw, req, prms)
-	findCtx, __err := app.NewFindPurchaseContext(goaCtx, req, service)
-	if __err != nil {
-		panic("invalid test data " + __err.Error()) // bug
+	findCtx, _err := app.NewFindPurchaseContext(goaCtx, req, service)
+	if _err != nil {
+		panic("invalid test data " + _err.Error()) // bug
 	}
-	findCtx.Payload = payload
 
 	// Perform action
-	__err = ctrl.Find(findCtx)
+	_err = ctrl.Find(findCtx)
 
 	// Validate response
-	if __err != nil {
-		t.Fatalf("controller returned %+v, logs:\n%s", __err, logBuf.String())
+	if _err != nil {
+		t.Fatalf("controller returned %+v, logs:\n%s", _err, logBuf.String())
 	}
 	if rw.Code != 200 {
 		t.Errorf("invalid response status code: got %+v, expected 200", rw.Code)
 	}
 	var mt *app.Purchase
 	if resp != nil {
-		var _ok bool
-		mt, _ok = resp.(*app.Purchase)
-		if !_ok {
+		var ok bool
+		mt, ok = resp.(*app.Purchase)
+		if !ok {
 			t.Fatalf("invalid response media: got variable of type %T, value %+v, expected instance of app.Purchase", resp, resp)
 		}
-		__err = mt.Validate()
-		if __err != nil {
-			t.Errorf("invalid response media type: %s", __err)
+		_err = mt.Validate()
+		if _err != nil {
+			t.Errorf("invalid response media type: %s", _err)
 		}
 	}
 

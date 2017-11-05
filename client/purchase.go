@@ -69,8 +69,8 @@ func FindPurchasePath(transactionID string) string {
 }
 
 // retrieve an specific purchase
-func (c *Client) FindPurchase(ctx context.Context, path string, payload *PurchasePayload, contentType string) (*http.Response, error) {
-	req, err := c.NewFindPurchaseRequest(ctx, path, payload, contentType)
+func (c *Client) FindPurchase(ctx context.Context, path string) (*http.Response, error) {
+	req, err := c.NewFindPurchaseRequest(ctx, path)
 	if err != nil {
 		return nil, err
 	}
@@ -78,29 +78,15 @@ func (c *Client) FindPurchase(ctx context.Context, path string, payload *Purchas
 }
 
 // NewFindPurchaseRequest create the request corresponding to the find action endpoint of the Purchase resource.
-func (c *Client) NewFindPurchaseRequest(ctx context.Context, path string, payload *PurchasePayload, contentType string) (*http.Request, error) {
-	var body bytes.Buffer
-	if contentType == "" {
-		contentType = "*/*" // Use default encoder
-	}
-	err := c.Encoder.Encode(payload, &body, contentType)
-	if err != nil {
-		return nil, fmt.Errorf("failed to encode body: %s", err)
-	}
+func (c *Client) NewFindPurchaseRequest(ctx context.Context, path string) (*http.Request, error) {
 	scheme := c.Scheme
 	if scheme == "" {
 		scheme = "http"
 	}
 	u := url.URL{Host: c.Host, Scheme: scheme, Path: path}
-	req, err := http.NewRequest("GET", u.String(), &body)
+	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {
 		return nil, err
-	}
-	header := req.Header
-	if contentType == "*/*" {
-		header.Set("Content-Type", "application/json")
-	} else {
-		header.Set("Content-Type", contentType)
 	}
 	return req, nil
 }

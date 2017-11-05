@@ -37,8 +37,6 @@ type (
 
 	// FindPurchaseCommand is the command line data structure for the find action of Purchase
 	FindPurchaseCommand struct {
-		Payload       string
-		ContentType   string
 		TransactionID string
 		PrettyPrint   bool
 	}
@@ -77,15 +75,7 @@ Payload example:
 	sub = &cobra.Command{
 		Use:   `purchase ["/purchases/TRANSACTIONID"]`,
 		Short: `A pos purchase data`,
-		Long: `A pos purchase data
-
-Payload example:
-
-{
-   "Locator": "y",
-   "PurchaseValue": 0.010328092863740972
-}`,
-		RunE: func(cmd *cobra.Command, args []string) error { return tmp2.Run(c, args) },
+		RunE:  func(cmd *cobra.Command, args []string) error { return tmp2.Run(c, args) },
 	}
 	tmp2.RegisterFlags(sub, c)
 	sub.PersistentFlags().BoolVar(&tmp2.PrettyPrint, "pp", false, "Pretty print response body")
@@ -287,16 +277,9 @@ func (cmd *FindPurchaseCommand) Run(c *client.Client, args []string) error {
 	} else {
 		path = fmt.Sprintf("/purchases/%v", url.QueryEscape(cmd.TransactionID))
 	}
-	var payload client.PurchasePayload
-	if cmd.Payload != "" {
-		err := json.Unmarshal([]byte(cmd.Payload), &payload)
-		if err != nil {
-			return fmt.Errorf("failed to deserialize payload: %s", err)
-		}
-	}
 	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
 	ctx := goa.WithLogger(context.Background(), logger)
-	resp, err := c.FindPurchase(ctx, path, &payload, cmd.ContentType)
+	resp, err := c.FindPurchase(ctx, path)
 	if err != nil {
 		goa.LogError(ctx, "failed", "err", err)
 		return err
@@ -308,8 +291,6 @@ func (cmd *FindPurchaseCommand) Run(c *client.Client, args []string) error {
 
 // RegisterFlags registers the command flags with the command line.
 func (cmd *FindPurchaseCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
-	cc.Flags().StringVar(&cmd.Payload, "payload", "", "Request body encoded in JSON")
-	cc.Flags().StringVar(&cmd.ContentType, "content", "", "Request content type override, e.g. 'application/x-www-form-urlencoded'")
 	var transactionID string
 	cc.Flags().StringVar(&cmd.TransactionID, "TransactionId", transactionID, ``)
 }

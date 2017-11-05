@@ -74,35 +74,14 @@ func MountPurchaseController(service *goa.Service, ctrl PurchaseController) {
 		if err != nil {
 			return err
 		}
-		// Build the payload
-		if rawPayload := goa.ContextRequest(ctx).Payload; rawPayload != nil {
-			rctx.Payload = rawPayload.(*PurchasePayload)
-		} else {
-			return goa.MissingPayloadError()
-		}
 		return ctrl.Find(rctx)
 	}
-	service.Mux.Handle("GET", "/purchases/:TransactionId", ctrl.MuxHandler("find", h, unmarshalFindPurchasePayload))
+	service.Mux.Handle("GET", "/purchases/:TransactionId", ctrl.MuxHandler("find", h, nil))
 	service.LogInfo("mount", "ctrl", "Purchase", "action", "Find", "route", "GET /purchases/:TransactionId")
 }
 
 // unmarshalCreatePurchasePayload unmarshals the request body into the context request data Payload field.
 func unmarshalCreatePurchasePayload(ctx context.Context, service *goa.Service, req *http.Request) error {
-	payload := &purchasePayload{}
-	if err := service.DecodeRequest(req, payload); err != nil {
-		return err
-	}
-	if err := payload.Validate(); err != nil {
-		// Initialize payload with private data structure so it can be logged
-		goa.ContextRequest(ctx).Payload = payload
-		return err
-	}
-	goa.ContextRequest(ctx).Payload = payload.Publicize()
-	return nil
-}
-
-// unmarshalFindPurchasePayload unmarshals the request body into the context request data Payload field.
-func unmarshalFindPurchasePayload(ctx context.Context, service *goa.Service, req *http.Request) error {
 	payload := &purchasePayload{}
 	if err := service.DecodeRequest(req, payload); err != nil {
 		return err
