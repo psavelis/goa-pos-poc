@@ -16,15 +16,15 @@ import (
 )
 
 // Detailed information regarding a POS purchase operation
-type purchase struct {
+type purchasePayload struct {
 	// Operation reference code
 	Locator *string `form:"Locator,omitempty" json:"Locator,omitempty" xml:"Locator,omitempty"`
 	// Total amount paid
 	PurchaseValue *float64 `form:"PurchaseValue,omitempty" json:"PurchaseValue,omitempty" xml:"PurchaseValue,omitempty"`
 }
 
-// Validate validates the purchase type instance.
-func (ut *purchase) Validate() (err error) {
+// Validate validates the purchasePayload type instance.
+func (ut *purchasePayload) Validate() (err error) {
 	if ut.Locator == nil {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`request`, "Locator"))
 	}
@@ -49,9 +49,9 @@ func (ut *purchase) Validate() (err error) {
 	return
 }
 
-// Publicize creates Purchase from purchase
-func (ut *purchase) Publicize() *Purchase {
-	var pub Purchase
+// Publicize creates PurchasePayload from purchasePayload
+func (ut *purchasePayload) Publicize() *PurchasePayload {
+	var pub PurchasePayload
 	if ut.Locator != nil {
 		pub.Locator = *ut.Locator
 	}
@@ -62,15 +62,15 @@ func (ut *purchase) Publicize() *Purchase {
 }
 
 // Detailed information regarding a POS purchase operation
-type Purchase struct {
+type PurchasePayload struct {
 	// Operation reference code
 	Locator string `form:"Locator" json:"Locator" xml:"Locator"`
 	// Total amount paid
 	PurchaseValue float64 `form:"PurchaseValue" json:"PurchaseValue" xml:"PurchaseValue"`
 }
 
-// Validate validates the Purchase type instance.
-func (ut *Purchase) Validate() (err error) {
+// Validate validates the PurchasePayload type instance.
+func (ut *PurchasePayload) Validate() (err error) {
 	if ut.Locator == "" {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`type`, "Locator"))
 	}

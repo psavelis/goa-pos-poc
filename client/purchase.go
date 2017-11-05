@@ -25,7 +25,7 @@ func CreatePurchasePath() string {
 }
 
 // creates a purchase
-func (c *Client) CreatePurchase(ctx context.Context, path string, payload *Purchase, contentType string) (*http.Response, error) {
+func (c *Client) CreatePurchase(ctx context.Context, path string, payload *PurchasePayload, contentType string) (*http.Response, error) {
 	req, err := c.NewCreatePurchaseRequest(ctx, path, payload, contentType)
 	if err != nil {
 		return nil, err
@@ -34,7 +34,7 @@ func (c *Client) CreatePurchase(ctx context.Context, path string, payload *Purch
 }
 
 // NewCreatePurchaseRequest create the request corresponding to the create action endpoint of the Purchase resource.
-func (c *Client) NewCreatePurchaseRequest(ctx context.Context, path string, payload *Purchase, contentType string) (*http.Request, error) {
+func (c *Client) NewCreatePurchaseRequest(ctx context.Context, path string, payload *PurchasePayload, contentType string) (*http.Request, error) {
 	var body bytes.Buffer
 	if contentType == "" {
 		contentType = "*/*" // Use default encoder
@@ -69,7 +69,7 @@ func FindPurchasePath(transactionID string) string {
 }
 
 // retrieve an specific purchase
-func (c *Client) FindPurchase(ctx context.Context, path string, payload *Purchase, contentType string) (*http.Response, error) {
+func (c *Client) FindPurchase(ctx context.Context, path string, payload *PurchasePayload, contentType string) (*http.Response, error) {
 	req, err := c.NewFindPurchaseRequest(ctx, path, payload, contentType)
 	if err != nil {
 		return nil, err
@@ -78,7 +78,7 @@ func (c *Client) FindPurchase(ctx context.Context, path string, payload *Purchas
 }
 
 // NewFindPurchaseRequest create the request corresponding to the find action endpoint of the Purchase resource.
-func (c *Client) NewFindPurchaseRequest(ctx context.Context, path string, payload *Purchase, contentType string) (*http.Request, error) {
+func (c *Client) NewFindPurchaseRequest(ctx context.Context, path string, payload *PurchasePayload, contentType string) (*http.Request, error) {
 	var body bytes.Buffer
 	if contentType == "" {
 		contentType = "*/*" // Use default encoder

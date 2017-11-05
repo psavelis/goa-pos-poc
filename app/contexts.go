@@ -21,7 +21,7 @@ type CreatePurchaseContext struct {
 	context.Context
 	*goa.ResponseData
 	*goa.RequestData
-	Payload *Purchase
+	Payload *PurchasePayload
 }
 
 // NewCreatePurchaseContext parses the incoming request URL and body, performs validations and creates the
@@ -48,7 +48,7 @@ type FindPurchaseContext struct {
 	*goa.ResponseData
 	*goa.RequestData
 	TransactionID string
-	Payload       *Purchase
+	Payload       *PurchasePayload
 }
 
 // NewFindPurchaseContext parses the incoming request URL and body, performs validations and creates the

@@ -8,7 +8,7 @@ var _ = API("pos", func() {
 	Host("localhost:5001")
 })
 
-var PurchasePayload = Type("Purchase", func() {
+var PurchasePayload = Type("PurchasePayload", func() {
 	Description("Detailed information regarding a POS purchase operation")
 
 	Attribute("Locator", String, "Operation reference code", func() {

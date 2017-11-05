@@ -28,7 +28,7 @@ import (
 // It returns the response writer so it's possible to inspect the response headers.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func CreatePurchaseCreated(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.PurchaseController, payload *app.Purchase) http.ResponseWriter {
+func CreatePurchaseCreated(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.PurchaseController, payload *app.PurchasePayload) http.ResponseWriter {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -96,7 +96,7 @@ func CreatePurchaseCreated(t goatest.TInterface, ctx context.Context, service *g
 // It returns the response writer so it's possible to inspect the response headers and the media type struct written to the response.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func FindPurchaseOK(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.PurchaseController, transactionID string, payload *app.Purchase) (http.ResponseWriter, *app.Purchase) {
+func FindPurchaseOK(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.PurchaseController, transactionID string, payload *app.PurchasePayload) (http.ResponseWriter, *app.Purchase) {
 	// Setup service
 	var (
 		logBuf bytes.Buffer

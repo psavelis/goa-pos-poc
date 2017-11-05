@@ -55,7 +55,7 @@ func MountPurchaseController(service *goa.Service, ctrl PurchaseController) {
 		}
 		// Build the payload
 		if rawPayload := goa.ContextRequest(ctx).Payload; rawPayload != nil {
-			rctx.Payload = rawPayload.(*Purchase)
+			rctx.Payload = rawPayload.(*PurchasePayload)
 		} else {
 			return goa.MissingPayloadError()
 		}
@@ -76,7 +76,7 @@ func MountPurchaseController(service *goa.Service, ctrl PurchaseController) {
 		}
 		// Build the payload
 		if rawPayload := goa.ContextRequest(ctx).Payload; rawPayload != nil {
-			rctx.Payload = rawPayload.(*Purchase)
+			rctx.Payload = rawPayload.(*PurchasePayload)
 		} else {
 			return goa.MissingPayloadError()
 		}
@@ -88,7 +88,7 @@ func MountPurchaseController(service *goa.Service, ctrl PurchaseController) {
 
 // unmarshalCreatePurchasePayload unmarshals the request body into the context request data Payload field.
 func unmarshalCreatePurchasePayload(ctx context.Context, service *goa.Service, req *http.Request) error {
-	payload := &purchase{}
+	payload := &purchasePayload{}
 	if err := service.DecodeRequest(req, payload); err != nil {
 		return err
 	}
@@ -103,7 +103,7 @@ func unmarshalCreatePurchasePayload(ctx context.Context, service *goa.Service, r
 
 // unmarshalFindPurchasePayload unmarshals the request body into the context request data Payload field.
 func unmarshalFindPurchasePayload(ctx context.Context, service *goa.Service, req *http.Request) error {
-	payload := &purchase{}
+	payload := &purchasePayload{}
 	if err := service.DecodeRequest(req, payload); err != nil {
 		return err
 	}

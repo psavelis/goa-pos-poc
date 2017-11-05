@@ -254,7 +254,7 @@ func (cmd *CreatePurchaseCommand) Run(c *client.Client, args []string) error {
 	} else {
 		path = "/purchases/"
 	}
-	var payload client.Purchase
+	var payload client.PurchasePayload
 	if cmd.Payload != "" {
 		err := json.Unmarshal([]byte(cmd.Payload), &payload)
 		if err != nil {
@@ -287,7 +287,7 @@ func (cmd *FindPurchaseCommand) Run(c *client.Client, args []string) error {
 	} else {
 		path = fmt.Sprintf("/purchases/%v", url.QueryEscape(cmd.TransactionID))
 	}
-	var payload client.Purchase
+	var payload client.PurchasePayload
 	if cmd.Payload != "" {
 		err := json.Unmarshal([]byte(cmd.Payload), &payload)
 		if err != nil {
