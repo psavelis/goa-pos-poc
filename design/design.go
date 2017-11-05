@@ -23,7 +23,7 @@ var PurchasePayload = Type("Purchase", func() {
 	Required("Locator", "PurchaseValue")
 })
 
-var PurchaseMedia = MediaType("application/psavelis.pos.purchase", func() {
+var PurchaseMedia = MediaType("vnd.application/pos.purchases", func() {
 	TypeName("Purchase")
 	Reference(PurchasePayload)
 
@@ -32,6 +32,12 @@ var PurchaseMedia = MediaType("application/psavelis.pos.purchase", func() {
 		Attribute("Locator")
 		Attribute("PurchaseValue")
 		Required("TransactionId", "Locator", "PurchaseValue")
+	})
+
+	View("default", func() {
+		Attribute("TransactionId")
+		Attribute("Locator")
+		Attribute("PurchaseValue")
 	})
 })
 

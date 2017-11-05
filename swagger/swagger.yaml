@@ -1,0 +1,84 @@
+consumes:
+- application/json
+- application/xml
+- application/gob
+- application/x-gob
+definitions:
+  Purchase:
+    description: Detailed information regarding a POS purchase operation
+    example:
+      Locator: "y"
+      PurchaseValue: 0.010328093
+    properties:
+      Locator:
+        description: Operation reference code
+        example: "y"
+        maxLength: 30
+        minLength: 1
+        type: string
+      PurchaseValue:
+        description: Total amount paid
+        example: 0.010328093
+        minimum: 0.01
+        type: number
+    required:
+    - Locator
+    - PurchaseValue
+    title: Purchase
+    type: object
+host: localhost:5001
+info:
+  description: point of sale microservice
+  version: ""
+paths:
+  /purchases/:
+    post:
+      description: creates a purchase
+      operationId: Purchase#create
+      parameters:
+      - description: Detailed information regarding a POS purchase operation
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/Purchase'
+      responses:
+        "201":
+          description: Created
+      summary: create Purchase
+      tags:
+      - Purchase
+  /purchases/{TransactionId}:
+    get:
+      description: retrieve an specific purchase
+      operationId: Purchase#find
+      parameters:
+      - in: path
+        name: TransactionId
+        required: true
+        type: string
+      - description: Detailed information regarding a POS purchase operation
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/Purchase'
+      produces:
+      - vnd.application/pos.purchases
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Purchase'
+      summary: find Purchase
+      tags:
+      - Purchase
+produces:
+- application/json
+- application/xml
+- application/gob
+- application/x-gob
+responses:
+  Created:
+    description: Created
+swagger: "2.0"
