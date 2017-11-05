@@ -32,6 +32,13 @@ func (c *PurchaseController) Find(ctx *app.FindPurchaseContext) error {
 	// Put your logic here
 
 	// PurchaseController_Find: end_implement
-	res := &app.Purchase{}
+
+	// Mock
+	res := &app.Purchase{
+		TransactionID: "9BN1kXMNdEb8dql",
+		Locator:       "POS-TEST-001",
+		PurchaseValue: 159.99,
+	}
+
 	return ctx.OK(res)
 }

@@ -55,7 +55,6 @@ var _ = Resource("Purchase", func() {
 	Action("find", func() {
 		Description("retrieve an specific purchase")
 		Routing(GET("/:TransactionId"))
-		Payload(PurchasePayload)
 		Params(func() {
 			Param("TransactionId", String)
 		})
