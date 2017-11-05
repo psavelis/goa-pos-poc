@@ -4,6 +4,8 @@ import . "github.com/goadesign/goa/design"
 import . "github.com/goadesign/goa/design/apidsl"
 
 var _ = API("pos", func() {
+	Title("Point Of Sale API")
+	Version("v1")
 	Description("point of sale microservice")
 	Host("localhost:5001")
 })
@@ -60,4 +62,11 @@ var _ = Resource("Purchase", func() {
 		})
 		Response(OK, PurchaseMedia)
 	})
+})
+
+var _ = Resource("Swagger", func() {
+	Description("The API Swagger specification")
+
+	Files("/swagger.json", "swagger/swagger.json")
+	Files("swagger-ui/*filepath", "swagger-ui")
 })
