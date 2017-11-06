@@ -18,7 +18,7 @@ import (
 
 // Purchase media type (default view)
 //
-// Identifier: vnd.application/pos.purchases; view=default
+// Identifier: application/vnd.pos-purchases+json; view=default
 type Purchase struct {
 	// Operation reference code
 	Locator string `form:"Locator" json:"Locator" xml:"Locator"`

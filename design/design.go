@@ -25,7 +25,7 @@ var PurchasePayload = Type("PurchasePayload", func() {
 	Required("Locator", "PurchaseValue")
 })
 
-var PurchaseMedia = MediaType("vnd.application/pos.purchases", func() {
+var PurchaseMedia = MediaType("application/vnd.pos-purchases+json", func() {
 	TypeName("Purchase")
 	Reference(PurchasePayload)
 

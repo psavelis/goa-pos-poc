@@ -69,6 +69,6 @@ func NewFindPurchaseContext(ctx context.Context, r *http.Request, service *goa.S
 
 // OK sends a HTTP response with status code 200.
 func (ctx *FindPurchaseContext) OK(r *Purchase) error {
-	ctx.ResponseData.Header().Set("Content-Type", "vnd.application/pos.purchases")
+	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.pos-purchases+json")
 	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
 }

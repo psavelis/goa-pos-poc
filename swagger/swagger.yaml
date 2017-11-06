@@ -30,7 +30,7 @@ definitions:
     - TransactionId
     - Locator
     - PurchaseValue
-    title: 'Mediatype identifier: vnd.application/pos.purchases; view=default'
+    title: 'Mediatype identifier: application/vnd.pos-purchases+json; view=default'
     type: object
   PurchasePayload:
     description: Detailed information regarding a POS purchase operation
@@ -124,7 +124,7 @@ paths:
         required: true
         type: string
       produces:
-      - vnd.application/pos.purchases
+      - application/vnd.pos-purchases+json
       responses:
         "200":
           description: OK
