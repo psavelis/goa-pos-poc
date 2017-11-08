@@ -133,9 +133,18 @@ paths:
       summary: find Purchase
       tags:
       - Purchase
-  /swagger-ui/{filepath}:
+  /swagger.json:
     get:
-      operationId: Swagger#/swagger-ui/*filepath
+      operationId: Swagger#/swagger.json
+      responses:
+        "200":
+          description: File downloaded
+          schema:
+            type: file
+      summary: Download swagger/swagger.json
+  /swagger/{filepath}:
+    get:
+      operationId: Swagger#/swagger/*filepath
       parameters:
       - description: Relative file path
         in: path
@@ -151,16 +160,7 @@ paths:
           description: File not found
           schema:
             $ref: '#/definitions/error'
-      summary: Download swagger-ui
-  /swagger.json:
-    get:
-      operationId: Swagger#/swagger.json
-      responses:
-        "200":
-          description: File downloaded
-          schema:
-            type: file
-      summary: Download swagger/swagger.json
+      summary: Download swagger
 produces:
 - application/json
 - application/xml

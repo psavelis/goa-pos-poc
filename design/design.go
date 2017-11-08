@@ -67,6 +67,10 @@ var _ = Resource("Purchase", func() {
 var _ = Resource("Swagger", func() {
 	Description("The API Swagger specification")
 
+	Origin("*", func() {
+		Methods("GET", "OPTIONS")
+	})
+
 	Files("/swagger.json", "swagger/swagger.json")
-	Files("swagger-ui/*filepath", "swagger-ui")
+	Files("swagger/*filepath", "swagger")
 })

@@ -5,7 +5,7 @@
 // Command:
 // $ goagen
 // --design=github.com/psavelis/goa-pos-poc/design
-// --out=c:\code\src\github.com\psavelis\goa-pos-poc
+// --out=$(GOPATH)src\github.com\psavelis\goa-pos-poc
 // --version=v1.3.0
 
 package client
@@ -21,14 +21,14 @@ import (
 	"path"
 )
 
-// DownloadSwaggerUI downloads /files with the given filename and writes it to the file dest.
+// DownloadSwagger downloads /files with the given filename and writes it to the file dest.
 // It returns the number of bytes downloaded in case of success.
-func (c *Client) DownloadSwaggerUI(ctx context.Context, filename, dest string) (int64, error) {
+func (c *Client) DownloadSwagger(ctx context.Context, filename, dest string) (int64, error) {
 	scheme := c.Scheme
 	if scheme == "" {
 		scheme = "http"
 	}
-	p := path.Join("/swagger-ui/", filename)
+	p := path.Join("/swagger/", filename)
 	u := url.URL{Host: c.Host, Scheme: scheme, Path: p}
 	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {

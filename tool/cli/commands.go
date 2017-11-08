@@ -5,7 +5,7 @@
 // Command:
 // $ goagen
 // --design=github.com/psavelis/goa-pos-poc/design
-// --out=c:\code\src\github.com\psavelis\goa-pos-poc
+// --out=$(GOPATH)src\github.com\psavelis\goa-pos-poc
 // --version=v1.3.0
 
 package cli
@@ -277,9 +277,9 @@ func (cmd *DownloadCommand) Run(c *client.Client, args []string) error {
 		}
 		goto found
 	}
-	if strings.HasPrefix(rpath, "/swagger-ui/") {
-		fnd = c.DownloadSwaggerUI
-		rpath = rpath[12:]
+	if strings.HasPrefix(rpath, "/swagger/") {
+		fnd = c.DownloadSwagger
+		rpath = rpath[9:]
 		if outfile == "" {
 			_, outfile = path.Split(rpath)
 		}

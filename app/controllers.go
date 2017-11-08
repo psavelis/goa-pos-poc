@@ -5,7 +5,7 @@
 // Command:
 // $ goagen
 // --design=github.com/psavelis/goa-pos-poc/design
-// --out=c:\code\src\github.com\psavelis\goa-pos-poc
+// --out=$(GOPATH)src\github.com\psavelis\goa-pos-poc
 // --version=v1.3.0
 
 package app
@@ -13,6 +13,7 @@ package app
 import (
 	"context"
 	"github.com/goadesign/goa"
+	"github.com/goadesign/goa/cors"
 	"net/http"
 )
 
@@ -105,16 +106,45 @@ type SwaggerController interface {
 func MountSwaggerController(service *goa.Service, ctrl SwaggerController) {
 	initService(service)
 	var h goa.Handler
+	service.Mux.Handle("OPTIONS", "/swagger/*filepath", ctrl.MuxHandler("preflight", handleSwaggerOrigin(cors.HandlePreflight()), nil))
+	service.Mux.Handle("OPTIONS", "/swagger.json", ctrl.MuxHandler("preflight", handleSwaggerOrigin(cors.HandlePreflight()), nil))
 
-	h = ctrl.FileHandler("/swagger-ui/*filepath", "swagger-ui")
-	service.Mux.Handle("GET", "/swagger-ui/*filepath", ctrl.MuxHandler("serve", h, nil))
-	service.LogInfo("mount", "ctrl", "Swagger", "files", "swagger-ui", "route", "GET /swagger-ui/*filepath")
+	h = ctrl.FileHandler("/swagger/*filepath", "swagger")
+	h = handleSwaggerOrigin(h)
+	service.Mux.Handle("GET", "/swagger/*filepath", ctrl.MuxHandler("serve", h, nil))
+	service.LogInfo("mount", "ctrl", "Swagger", "files", "swagger", "route", "GET /swagger/*filepath")
 
 	h = ctrl.FileHandler("/swagger.json", "swagger/swagger.json")
+	h = handleSwaggerOrigin(h)
 	service.Mux.Handle("GET", "/swagger.json", ctrl.MuxHandler("serve", h, nil))
 	service.LogInfo("mount", "ctrl", "Swagger", "files", "swagger/swagger.json", "route", "GET /swagger.json")
 
-	h = ctrl.FileHandler("/swagger-ui/", "swagger-ui\\index.html")
-	service.Mux.Handle("GET", "/swagger-ui/", ctrl.MuxHandler("serve", h, nil))
-	service.LogInfo("mount", "ctrl", "Swagger", "files", "swagger-ui\\index.html", "route", "GET /swagger-ui/")
+	h = ctrl.FileHandler("/swagger/", "swagger\\index.html")
+	h = handleSwaggerOrigin(h)
+	service.Mux.Handle("GET", "/swagger/", ctrl.MuxHandler("serve", h, nil))
+	service.LogInfo("mount", "ctrl", "Swagger", "files", "swagger\\index.html", "route", "GET /swagger/")
+}
+
+// handleSwaggerOrigin applies the CORS response headers corresponding to the origin.
+func handleSwaggerOrigin(h goa.Handler) goa.Handler {
+
+	return func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		origin := req.Header.Get("Origin")
+		if origin == "" {
+			// Not a CORS request
+			return h(ctx, rw, req)
+		}
+		if cors.MatchOrigin(origin, "*") {
+			ctx = goa.WithLogContext(ctx, "origin", origin)
+			rw.Header().Set("Access-Control-Allow-Origin", origin)
+			rw.Header().Set("Access-Control-Allow-Credentials", "false")
+			if acrm := req.Header.Get("Access-Control-Request-Method"); acrm != "" {
+				// We are handling a preflight request
+				rw.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
+			}
+			return h(ctx, rw, req)
+		}
+
+		return h(ctx, rw, req)
+	}
 }

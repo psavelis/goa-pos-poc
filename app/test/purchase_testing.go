@@ -5,7 +5,7 @@
 // Command:
 // $ goagen
 // --design=github.com/psavelis/goa-pos-poc/design
-// --out=c:\code\src\github.com\psavelis\goa-pos-poc
+// --out=$(GOPATH)src\github.com\psavelis\goa-pos-poc
 // --version=v1.3.0
 
 package test
