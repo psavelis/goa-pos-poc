@@ -21,7 +21,7 @@
 
 [[projects]]
   name = "github.com/goadesign/goa"
-  packages = [".","client","design","design/apidsl","dslengine","goatest","middleware","uuid"]
+  packages = [".","client","cors","design","design/apidsl","dslengine","goatest","middleware","uuid"]
   revision = "5646a430cdeb66983d5ace3384e0a667c185abc7"
   version = "v1.3.0"
 
@@ -79,9 +79,15 @@
   packages = ["websocket"]
   revision = "01c190206fbdffa42f334f4b2bf2220f50e64920"
 
+[[projects]]
+  branch = "v2"
+  name = "gopkg.in/mgo.v2"
+  packages = [".","bson","internal/json","internal/sasl","internal/scram"]
+  revision = "3f83fa5005286a7fe593b055f0d7771a7dce4655"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "bf95facd03f0e309a2a2610aeaed0ea0f348f744cc9b0e76f9f945e6851d0d25"
+  inputs-digest = "dc99d59ef676c037fb545ab9bee6e2e83a324d538ade8b0ff0ef6e1cac52f1d5"
   solver-name = "gps-cdcl"
   solver-version = 1
