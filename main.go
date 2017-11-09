@@ -31,7 +31,7 @@ func main() {
 	}
 	defer session.Close()
 
-	session.SetMode(mgo.Monotonic)
+	session.SetMode(mgo.Monotonic, true)
 
 	DataStore.session = session
 
