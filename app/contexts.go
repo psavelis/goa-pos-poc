@@ -48,6 +48,12 @@ func (ctx *CreatePurchaseContext) BadRequest(r error) error {
 	return ctx.ResponseData.Service.Send(ctx.Context, 400, r)
 }
 
+// Conflict sends a HTTP response with status code 422.
+func (ctx *CreatePurchaseContext) Conflict() error {
+	ctx.ResponseData.WriteHeader(422)
+	return nil
+}
+
 // ShowPurchaseContext provides the Purchase show action context.
 type ShowPurchaseContext struct {
 	context.Context

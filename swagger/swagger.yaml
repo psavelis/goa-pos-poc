@@ -1,8 +1,5 @@
 consumes:
 - application/json
-- application/xml
-- application/gob
-- application/x-gob
 definitions:
   Purchase:
     description: Purchase media type (default view)
@@ -126,12 +123,19 @@ paths:
           headers:
             Location:
               description: href to created resource
-              pattern: ^/purchases/[0-9]+$
+              pattern: ^/purchases/[A-Za-z0-9_.]+$
               type: string
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/error'
+        "422":
+          description: A conflict arose from your request. (e.g. resource already
+            exists)
+          headers:
+            X-Request-Id:
+              pattern: '[a-f0-9]+'
+              type: string
       summary: create Purchase
       tags:
       - Purchase
@@ -192,10 +196,13 @@ paths:
       summary: Download swagger
 produces:
 - application/json
-- application/xml
-- application/gob
-- application/x-gob
 responses:
+  Conflict:
+    description: A conflict arose from your request. (e.g. resource already exists)
+    headers:
+      X-Request-Id:
+        pattern: '[a-f0-9]+'
+        type: string
   NotFound:
     description: Not Found
 swagger: "2.0"

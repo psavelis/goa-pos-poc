@@ -25,8 +25,8 @@ func CreatePurchasePath() string {
 }
 
 // creates a purchase
-func (c *Client) CreatePurchase(ctx context.Context, path string, payload *PurchasePayload, contentType string) (*http.Response, error) {
-	req, err := c.NewCreatePurchaseRequest(ctx, path, payload, contentType)
+func (c *Client) CreatePurchase(ctx context.Context, path string, payload *PurchasePayload) (*http.Response, error) {
+	req, err := c.NewCreatePurchaseRequest(ctx, path, payload)
 	if err != nil {
 		return nil, err
 	}
@@ -34,12 +34,9 @@ func (c *Client) CreatePurchase(ctx context.Context, path string, payload *Purch
 }
 
 // NewCreatePurchaseRequest create the request corresponding to the create action endpoint of the Purchase resource.
-func (c *Client) NewCreatePurchaseRequest(ctx context.Context, path string, payload *PurchasePayload, contentType string) (*http.Request, error) {
+func (c *Client) NewCreatePurchaseRequest(ctx context.Context, path string, payload *PurchasePayload) (*http.Request, error) {
 	var body bytes.Buffer
-	if contentType == "" {
-		contentType = "*/*" // Use default encoder
-	}
-	err := c.Encoder.Encode(payload, &body, contentType)
+	err := c.Encoder.Encode(payload, &body, "*/*")
 	if err != nil {
 		return nil, fmt.Errorf("failed to encode body: %s", err)
 	}
@@ -53,11 +50,7 @@ func (c *Client) NewCreatePurchaseRequest(ctx context.Context, path string, payl
 		return nil, err
 	}
 	header := req.Header
-	if contentType == "*/*" {
-		header.Set("Content-Type", "application/json")
-	} else {
-		header.Set("Content-Type", contentType)
-	}
+	header.Set("Content-Type", "application/json")
 	return req, nil
 }
 

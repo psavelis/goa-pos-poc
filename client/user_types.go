@@ -20,9 +20,9 @@ import (
 type purchasePayload struct {
 	ID *bson.ObjectId `bson:"_id,omitempty" json:"id"`
 	// Operation reference code
-	Locator *string `form:"Locator,omitempty" json:"Locator,omitempty" xml:"Locator,omitempty"`
+	Locator *string `bson:"locator,omitempty" json:"locator,locator"`
 	// Total amount paid
-	PurchaseValue *float64 `form:"PurchaseValue,omitempty" json:"PurchaseValue,omitempty" xml:"PurchaseValue,omitempty"`
+	PurchaseValue *float64 `bson:"purchase_value,omitempty" json:"purchase_value,purchase_value"`
 }
 
 // Validate validates the purchasePayload type instance.
@@ -70,9 +70,9 @@ func (ut *purchasePayload) Publicize() *PurchasePayload {
 type PurchasePayload struct {
 	ID *bson.ObjectId `bson:"_id,omitempty" json:"id"`
 	// Operation reference code
-	Locator string `form:"Locator" json:"Locator" xml:"Locator"`
+	Locator string `bson:"locator,omitempty" json:"locator,locator"`
 	// Total amount paid
-	PurchaseValue float64 `form:"PurchaseValue" json:"PurchaseValue" xml:"PurchaseValue"`
+	PurchaseValue float64 `bson:"purchase_value,omitempty" json:"purchase_value,purchase_value"`
 }
 
 // Validate validates the PurchasePayload type instance.

@@ -20,13 +20,13 @@ import (
 // Identifier: application/vnd.purchase+json; view=default
 type Purchase struct {
 	// API href of Purchase
-	Href string `form:"Href" json:"Href" xml:"Href"`
+	Href string `json:"href"`
 	// Operation reference code
-	Locator string `form:"Locator" json:"Locator" xml:"Locator"`
+	Locator string `bson:"locator,omitempty" json:"locator,locator"`
 	// Total amount paid
-	PurchaseValue float64 `form:"PurchaseValue" json:"PurchaseValue" xml:"PurchaseValue"`
+	PurchaseValue float64 `bson:"purchase_value,omitempty" json:"purchase_value,purchase_value"`
 	// Unique transaction identifier
-	TransactionID string `form:"TransactionId" json:"TransactionId" xml:"TransactionId"`
+	TransactionID string `json:"transaction_id"`
 }
 
 // Validate validates the Purchase media type instance.

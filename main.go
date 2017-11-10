@@ -27,6 +27,7 @@ func main() {
 	service.Use(middleware.ErrorHandler(service, true))
 	service.Use(middleware.Recover())
 
+	// MongoDB (Atlas) setup
 	tlsConfig := &tls.Config{}
 	tlsConfig.InsecureSkipVerify = true
 
@@ -45,7 +46,24 @@ func main() {
 
 	session.SetMode(mgo.Monotonic, true)
 
+	// services-pos database
 	Database = session.DB("services-pos")
+
+	//Database.C("Purchase").RemoveAll(bson.M{})
+
+	// Purchases collection index
+	index := mgo.Index{
+		Key:        []string{"locator"},
+		Unique:     true,
+		DropDups:   true,
+		Background: true,
+		Sparse:     true,
+	}
+
+	err = Database.C("Purchase").EnsureIndex(index)
+	if err != nil {
+		panic(err)
+	}
 
 	// Mount "Purchase" controller
 	c := NewPurchaseController(service)

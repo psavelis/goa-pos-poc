@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/goadesign/goa"
 	"github.com/psavelis/goa-pos-poc/app"
+	mgo "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -19,29 +20,47 @@ func NewPurchaseController(service *goa.Service) *PurchaseController {
 // Create runs the create action.
 func (c *PurchaseController) Create(ctx *app.CreatePurchaseContext) error {
 
-	newId := bson.NewObjectId()
-	ctx.Payload.ID = &newId
-	Database.C("Purchase").With(Database.Session.Copy()).Insert(ctx.Payload)
+	newID := bson.NewObjectId()
 
-	ctx.ResponseData.Header().Set("Location", app.PurchaseHref(newId))
+	ctx.Payload.ID = &newID
+
+	session := Database.Session.Copy()
+	defer session.Close()
+
+	err := session.DB("services-pos").C("Purchase").Insert(ctx.Payload)
+
+	if err != nil {
+		if mgo.IsDup(err) {
+			return ctx.Conflict()
+		}
+		// TODO: log
+		return ctx.Err()
+	}
+
+	ctx.ResponseData.Header().Set("Location", app.PurchaseHref(newID.Hex()))
 
 	return ctx.Created()
 }
 
 // Show runs the show action.
 func (c *PurchaseController) Show(ctx *app.ShowPurchaseContext) error {
-	// PurchaseController_Show: start_implement
 
-	// Put your logic here
+	session := Database.Session.Copy()
+	defer session.Close()
 
-	// PurchaseController_Show: end_implement
-	//Database.C("").Count()
-	// Mock
-	res := &app.Purchase{
-		TransactionID: "9BN1kXMNdEb8dql",
-		Locator:       "POS-TEST-001",
-		PurchaseValue: 159.99,
+	result := app.Purchase{}
+
+	err := session.DB("services-pos").C("Purchase").FindId(bson.ObjectIdHex(ctx.TransactionID)).One(&result)
+
+	if err != nil {
+		return ctx.Err()
 	}
 
-	return ctx.OK(res)
+	if len(result.Locator) == 0 {
+		return ctx.NotFound()
+	}
+
+	result.Href = app.PurchaseHref(ctx.TransactionID)
+
+	return ctx.OK(&result)
 }

@@ -9,6 +9,9 @@ var _ = API("pos", func() {
 	Description("point of sale microservice")
 	Host("localhost:5001")
 
+	Consumes("application/json")
+	Produces("application/json")
+
 	ResponseTemplate(Created, func(pattern string) {
 		Description("Resource created")
 		Status(201)
@@ -17,6 +20,17 @@ var _ = API("pos", func() {
 				Pattern(pattern)
 			})
 		})
+	})
+
+	ResponseTemplate(Conflict, func() {
+		Description("A conflict arose from your request. (e.g. resource already exists)")
+		Headers(func() {
+			Header("X-Request-Id", func() {
+				Pattern("[a-f0-9]+")
+			})
+		})
+
+		Status(422)
 	})
 })
 
@@ -31,13 +45,17 @@ var PurchasePayload = Type("PurchasePayload", func() {
 	})
 
 	Attribute("Locator", String, "Operation reference code", func() {
-		Metadata("struct:field:name", "locator")
+		Metadata("struct:tag:json", "locator")
+		Metadata("struct:tag:bson", "locator,omitempty")
 
 		MinLength(1)
 		MaxLength(30)
 	})
 
 	Attribute("PurchaseValue", Number, "Total amount paid", func() {
+		Metadata("struct:tag:json", "purchase_value")
+		Metadata("struct:tag:bson", "purchase_value,omitempty")
+
 		Minimum(0.01)
 	})
 
@@ -52,12 +70,20 @@ var PurchaseMedia = MediaType("application/vnd.purchase+json", func() {
 
 		Attribute("Href", String, "API href of Purchase", func() {
 			Example("/purchases/1")
+			Metadata("struct:tag:json", "href")
 		})
 
 		// Inherited attributes from PurchasePayload
-		Attribute("TransactionId", String, "Unique transaction identifier")
-		Attribute("Locator")
-		Attribute("PurchaseValue")
+		Attribute("TransactionId", String, "Unique transaction identifier", func() {
+			Metadata("struct:tag:json", "transaction_id")
+		})
+		Attribute("Locator", String, "Operation reference code", func() {
+			Metadata("struct:tag:json", "locator")
+		})
+
+		Attribute("PurchaseValue", Number, "Total amount paid", func() {
+			Metadata("struct:tag:json", "purchase_value")
+		})
 
 		Required("TransactionId", "Locator", "PurchaseValue", "Href")
 	})
@@ -79,8 +105,9 @@ var _ = Resource("Purchase", func() {
 		Description("creates a purchase")
 		Routing(POST("/"))
 		Payload(PurchasePayload)
-		Response(Created, "^/purchases/[0-9]+$")
+		Response(Created, "^/purchases/[A-Za-z0-9_.]+$")
 		Response(BadRequest, ErrorMedia)
+		Response(Conflict)
 	})
 
 	Action("show", func() {
