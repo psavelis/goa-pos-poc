@@ -36,8 +36,9 @@ type (
 		PrettyPrint bool
 	}
 
-	// FindPurchaseCommand is the command line data structure for the find action of Purchase
-	FindPurchaseCommand struct {
+	// ShowPurchaseCommand is the command line data structure for the show action of Purchase
+	ShowPurchaseCommand struct {
+		// Unique transaction identifier
 		TransactionID string
 		PrettyPrint   bool
 	}
@@ -65,8 +66,9 @@ func RegisterCommands(app *cobra.Command, c *client.Client) {
 Payload example:
 
 {
-   "Locator": "y",
-   "PurchaseValue": 0.010328092863740972
+   "ID": "Consequatur totam quae occaecati deserunt.",
+   "Locator": "luk",
+   "PurchaseValue": 0.01626922911093448
 }`,
 		RunE: func(cmd *cobra.Command, args []string) error { return tmp1.Run(c, args) },
 	}
@@ -75,10 +77,10 @@ Payload example:
 	command.AddCommand(sub)
 	app.AddCommand(command)
 	command = &cobra.Command{
-		Use:   "find",
+		Use:   "show",
 		Short: `retrieve an specific purchase`,
 	}
-	tmp2 := new(FindPurchaseCommand)
+	tmp2 := new(ShowPurchaseCommand)
 	sub = &cobra.Command{
 		Use:   `purchase ["/purchases/TRANSACTIONID"]`,
 		Short: `A pos purchase data`,
@@ -334,8 +336,8 @@ func (cmd *CreatePurchaseCommand) RegisterFlags(cc *cobra.Command, c *client.Cli
 	cc.Flags().StringVar(&cmd.ContentType, "content", "", "Request content type override, e.g. 'application/x-www-form-urlencoded'")
 }
 
-// Run makes the HTTP request corresponding to the FindPurchaseCommand command.
-func (cmd *FindPurchaseCommand) Run(c *client.Client, args []string) error {
+// Run makes the HTTP request corresponding to the ShowPurchaseCommand command.
+func (cmd *ShowPurchaseCommand) Run(c *client.Client, args []string) error {
 	var path string
 	if len(args) > 0 {
 		path = args[0]
@@ -344,7 +346,7 @@ func (cmd *FindPurchaseCommand) Run(c *client.Client, args []string) error {
 	}
 	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
 	ctx := goa.WithLogger(context.Background(), logger)
-	resp, err := c.FindPurchase(ctx, path)
+	resp, err := c.ShowPurchase(ctx, path)
 	if err != nil {
 		goa.LogError(ctx, "failed", "err", err)
 		return err
@@ -355,7 +357,7 @@ func (cmd *FindPurchaseCommand) Run(c *client.Client, args []string) error {
 }
 
 // RegisterFlags registers the command flags with the command line.
-func (cmd *FindPurchaseCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
+func (cmd *ShowPurchaseCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
 	var transactionID string
-	cc.Flags().StringVar(&cmd.TransactionID, "TransactionId", transactionID, ``)
+	cc.Flags().StringVar(&cmd.TransactionID, "TransactionId", transactionID, `Unique transaction identifier`)
 }

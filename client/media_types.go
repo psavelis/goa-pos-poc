@@ -16,10 +16,19 @@ import (
 	"unicode/utf8"
 )
 
+// DecodeErrorResponse decodes the ErrorResponse instance encoded in resp body.
+func (c *Client) DecodeErrorResponse(resp *http.Response) (*goa.ErrorResponse, error) {
+	var decoded goa.ErrorResponse
+	err := c.Decoder.Decode(&decoded, resp.Body, resp.Header.Get("Content-Type"))
+	return &decoded, err
+}
+
 // Purchase media type (default view)
 //
-// Identifier: application/vnd.pos-purchases+json; view=default
+// Identifier: application/vnd.purchase+json; view=default
 type Purchase struct {
+	// API href of Purchase
+	Href string `form:"Href" json:"Href" xml:"Href"`
 	// Operation reference code
 	Locator string `form:"Locator" json:"Locator" xml:"Locator"`
 	// Total amount paid
@@ -37,6 +46,9 @@ func (mt *Purchase) Validate() (err error) {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "Locator"))
 	}
 
+	if mt.Href == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "Href"))
+	}
 	if utf8.RuneCountInString(mt.Locator) < 1 {
 		err = goa.MergeErrors(err, goa.InvalidLengthError(`response.Locator`, mt.Locator, utf8.RuneCountInString(mt.Locator), 1, true))
 	}

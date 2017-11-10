@@ -61,24 +61,24 @@ func (c *Client) NewCreatePurchaseRequest(ctx context.Context, path string, payl
 	return req, nil
 }
 
-// FindPurchasePath computes a request path to the find action of Purchase.
-func FindPurchasePath(transactionID string) string {
+// ShowPurchasePath computes a request path to the show action of Purchase.
+func ShowPurchasePath(transactionID string) string {
 	param0 := transactionID
 
 	return fmt.Sprintf("/purchases/%s", param0)
 }
 
 // retrieve an specific purchase
-func (c *Client) FindPurchase(ctx context.Context, path string) (*http.Response, error) {
-	req, err := c.NewFindPurchaseRequest(ctx, path)
+func (c *Client) ShowPurchase(ctx context.Context, path string) (*http.Response, error) {
+	req, err := c.NewShowPurchaseRequest(ctx, path)
 	if err != nil {
 		return nil, err
 	}
 	return c.Client.Do(ctx, req)
 }
 
-// NewFindPurchaseRequest create the request corresponding to the find action endpoint of the Purchase resource.
-func (c *Client) NewFindPurchaseRequest(ctx context.Context, path string) (*http.Request, error) {
+// NewShowPurchaseRequest create the request corresponding to the show action endpoint of the Purchase resource.
+func (c *Client) NewShowPurchaseRequest(ctx context.Context, path string) (*http.Request, error) {
 	scheme := c.Scheme
 	if scheme == "" {
 		scheme = "http"

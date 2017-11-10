@@ -8,12 +8,31 @@ var _ = API("pos", func() {
 	Version("v1")
 	Description("point of sale microservice")
 	Host("localhost:5001")
+
+	ResponseTemplate(Created, func(pattern string) {
+		Description("Resource created")
+		Status(201)
+		Headers(func() {
+			Header("Location", String, "href to created resource", func() {
+				Pattern(pattern)
+			})
+		})
+	})
 })
 
 var PurchasePayload = Type("PurchasePayload", func() {
 	Description("Detailed information regarding a POS purchase operation")
 
+	Attribute("ID", func() {
+		Metadata("struct:tag:json", "id")
+		Metadata("struct:tag:bson", "_id,omitempty")
+		Metadata("struct:field:type", "bson.ObjectId", "gopkg.in/mgo.v2/bson")
+		Metadata("swagger:generate", "false")
+	})
+
 	Attribute("Locator", String, "Operation reference code", func() {
+		Metadata("struct:field:name", "locator")
+
 		MinLength(1)
 		MaxLength(30)
 	})
@@ -25,25 +44,34 @@ var PurchasePayload = Type("PurchasePayload", func() {
 	Required("Locator", "PurchaseValue")
 })
 
-var PurchaseMedia = MediaType("application/vnd.pos-purchases+json", func() {
+var PurchaseMedia = MediaType("application/vnd.purchase+json", func() {
 	TypeName("Purchase")
 	Reference(PurchasePayload)
 
 	Attributes(func() {
+
+		Attribute("Href", String, "API href of Purchase", func() {
+			Example("/purchases/1")
+		})
+
+		// Inherited attributes from PurchasePayload
 		Attribute("TransactionId", String, "Unique transaction identifier")
 		Attribute("Locator")
 		Attribute("PurchaseValue")
-		Required("TransactionId", "Locator", "PurchaseValue")
+
+		Required("TransactionId", "Locator", "PurchaseValue", "Href")
 	})
 
 	View("default", func() {
 		Attribute("TransactionId")
 		Attribute("Locator")
 		Attribute("PurchaseValue")
+		Attribute("Href")
 	})
 })
 
 var _ = Resource("Purchase", func() {
+	DefaultMedia(PurchaseMedia)
 	Description("A pos purchase data")
 	BasePath("/purchases")
 
@@ -51,16 +79,20 @@ var _ = Resource("Purchase", func() {
 		Description("creates a purchase")
 		Routing(POST("/"))
 		Payload(PurchasePayload)
-		Response(Created)
+		Response(Created, "^/purchases/[0-9]+$")
+		Response(BadRequest, ErrorMedia)
 	})
 
-	Action("find", func() {
+	Action("show", func() {
 		Description("retrieve an specific purchase")
 		Routing(GET("/:TransactionId"))
 		Params(func() {
 			Param("TransactionId", String)
 		})
+
 		Response(OK, PurchaseMedia)
+		Response(NotFound)
+		Response(BadRequest, ErrorMedia)
 	})
 })
 

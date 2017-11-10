@@ -42,23 +42,29 @@ func (ctx *CreatePurchaseContext) Created() error {
 	return nil
 }
 
-// FindPurchaseContext provides the Purchase find action context.
-type FindPurchaseContext struct {
+// BadRequest sends a HTTP response with status code 400.
+func (ctx *CreatePurchaseContext) BadRequest(r error) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
+	return ctx.ResponseData.Service.Send(ctx.Context, 400, r)
+}
+
+// ShowPurchaseContext provides the Purchase show action context.
+type ShowPurchaseContext struct {
 	context.Context
 	*goa.ResponseData
 	*goa.RequestData
 	TransactionID string
 }
 
-// NewFindPurchaseContext parses the incoming request URL and body, performs validations and creates the
-// context used by the Purchase controller find action.
-func NewFindPurchaseContext(ctx context.Context, r *http.Request, service *goa.Service) (*FindPurchaseContext, error) {
+// NewShowPurchaseContext parses the incoming request URL and body, performs validations and creates the
+// context used by the Purchase controller show action.
+func NewShowPurchaseContext(ctx context.Context, r *http.Request, service *goa.Service) (*ShowPurchaseContext, error) {
 	var err error
 	resp := goa.ContextResponse(ctx)
 	resp.Service = service
 	req := goa.ContextRequest(ctx)
 	req.Request = r
-	rctx := FindPurchaseContext{Context: ctx, ResponseData: resp, RequestData: req}
+	rctx := ShowPurchaseContext{Context: ctx, ResponseData: resp, RequestData: req}
 	paramTransactionID := req.Params["TransactionId"]
 	if len(paramTransactionID) > 0 {
 		rawTransactionID := paramTransactionID[0]
@@ -68,7 +74,19 @@ func NewFindPurchaseContext(ctx context.Context, r *http.Request, service *goa.S
 }
 
 // OK sends a HTTP response with status code 200.
-func (ctx *FindPurchaseContext) OK(r *Purchase) error {
-	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.pos-purchases+json")
+func (ctx *ShowPurchaseContext) OK(r *Purchase) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.purchase+json")
 	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
+}
+
+// BadRequest sends a HTTP response with status code 400.
+func (ctx *ShowPurchaseContext) BadRequest(r error) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
+	return ctx.ResponseData.Service.Send(ctx.Context, 400, r)
+}
+
+// NotFound sends a HTTP response with status code 404.
+func (ctx *ShowPurchaseContext) NotFound() error {
+	ctx.ResponseData.WriteHeader(404)
+	return nil
 }

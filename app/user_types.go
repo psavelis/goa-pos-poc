@@ -12,11 +12,13 @@ package app
 
 import (
 	"github.com/goadesign/goa"
+	"gopkg.in/mgo.v2/bson"
 	"unicode/utf8"
 )
 
 // Detailed information regarding a POS purchase operation
 type purchasePayload struct {
+	ID *bson.ObjectId `bson:"_id,omitempty" json:"id"`
 	// Operation reference code
 	Locator *string `form:"Locator,omitempty" json:"Locator,omitempty" xml:"Locator,omitempty"`
 	// Total amount paid
@@ -52,6 +54,9 @@ func (ut *purchasePayload) Validate() (err error) {
 // Publicize creates PurchasePayload from purchasePayload
 func (ut *purchasePayload) Publicize() *PurchasePayload {
 	var pub PurchasePayload
+	if ut.ID != nil {
+		pub.ID = ut.ID
+	}
 	if ut.Locator != nil {
 		pub.Locator = *ut.Locator
 	}
@@ -63,6 +68,7 @@ func (ut *purchasePayload) Publicize() *PurchasePayload {
 
 // Detailed information regarding a POS purchase operation
 type PurchasePayload struct {
+	ID *bson.ObjectId `bson:"_id,omitempty" json:"id"`
 	// Operation reference code
 	Locator string `form:"Locator" json:"Locator" xml:"Locator"`
 	// Total amount paid

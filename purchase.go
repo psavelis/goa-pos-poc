@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/goadesign/goa"
 	"github.com/psavelis/goa-pos-poc/app"
+	"gopkg.in/mgo.v2/bson"
 )
 
 // PurchaseController implements the Purchase resource.
@@ -17,22 +18,24 @@ func NewPurchaseController(service *goa.Service) *PurchaseController {
 
 // Create runs the create action.
 func (c *PurchaseController) Create(ctx *app.CreatePurchaseContext) error {
-	// PurchaseController_Create: start_implement
 
-	// Put your logic here
+	newId := bson.NewObjectId()
+	ctx.Payload.ID = &newId
+	Database.C("Purchase").With(Database.Session.Copy()).Insert(ctx.Payload)
 
-	// PurchaseController_Create: end_implement
-	return nil
+	ctx.ResponseData.Header().Set("Location", app.PurchaseHref(newId))
+
+	return ctx.Created()
 }
 
-// Find runs the find action.
-func (c *PurchaseController) Find(ctx *app.FindPurchaseContext) error {
-	// PurchaseController_Find: start_implement
+// Show runs the show action.
+func (c *PurchaseController) Show(ctx *app.ShowPurchaseContext) error {
+	// PurchaseController_Show: start_implement
 
 	// Put your logic here
 
-	// PurchaseController_Find: end_implement
-
+	// PurchaseController_Show: end_implement
+	//Database.C("").Count()
 	// Mock
 	res := &app.Purchase{
 		TransactionID: "9BN1kXMNdEb8dql",

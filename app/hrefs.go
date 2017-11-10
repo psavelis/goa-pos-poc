@@ -9,3 +9,14 @@
 // --version=v1.3.0
 
 package app
+
+import (
+	"fmt"
+	"strings"
+)
+
+// PurchaseHref returns the resource href.
+func PurchaseHref(transactionID interface{}) string {
+	paramtransactionID := strings.TrimLeftFunc(fmt.Sprintf("%v", transactionID), func(r rune) bool { return r == '/' })
+	return fmt.Sprintf("/purchases/%v", paramtransactionID)
+}

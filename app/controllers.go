@@ -36,7 +36,7 @@ func initService(service *goa.Service) {
 type PurchaseController interface {
 	goa.Muxer
 	Create(*CreatePurchaseContext) error
-	Find(*FindPurchaseContext) error
+	Show(*ShowPurchaseContext) error
 }
 
 // MountPurchaseController "mounts" a Purchase resource controller on the given service.
@@ -71,14 +71,14 @@ func MountPurchaseController(service *goa.Service, ctrl PurchaseController) {
 			return err
 		}
 		// Build the context
-		rctx, err := NewFindPurchaseContext(ctx, req, service)
+		rctx, err := NewShowPurchaseContext(ctx, req, service)
 		if err != nil {
 			return err
 		}
-		return ctrl.Find(rctx)
+		return ctrl.Show(rctx)
 	}
-	service.Mux.Handle("GET", "/purchases/:TransactionId", ctrl.MuxHandler("find", h, nil))
-	service.LogInfo("mount", "ctrl", "Purchase", "action", "Find", "route", "GET /purchases/:TransactionId")
+	service.Mux.Handle("GET", "/purchases/:TransactionId", ctrl.MuxHandler("show", h, nil))
+	service.LogInfo("mount", "ctrl", "Purchase", "action", "Show", "route", "GET /purchases/:TransactionId")
 }
 
 // unmarshalCreatePurchasePayload unmarshals the request body into the context request data Payload field.
