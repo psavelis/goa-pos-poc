@@ -3,6 +3,9 @@
 package main
 
 import (
+	"crypto/tls"
+	"net"
+
 	"github.com/goadesign/goa"
 	"github.com/goadesign/goa/middleware"
 	"github.com/psavelis/goa-pos-poc/app"
@@ -24,8 +27,17 @@ func main() {
 	service.Use(middleware.ErrorHandler(service, true))
 	service.Use(middleware.Recover())
 
-	// MongoDB connection pool setup
-	session, err := mgo.Dial("localhost:27017")
+	tlsConfig := &tls.Config{}
+	tlsConfig.InsecureSkipVerify = true
+
+	dialInfo, err := mgo.ParseURL("mongodb://c:c@dev-cluster-shard-00-00-ozch3.mongodb.net:27017,dev-cluster-shard-00-01-ozch3.mongodb.net:27017,dev-cluster-shard-00-02-ozch3.mongodb.net:27017/test?replicaSet=dev-cluster-shard-0&authSource=admin")
+
+	dialInfo.DialServer = func(addr *mgo.ServerAddr) (net.Conn, error) {
+		conn, err := tls.Dial("tcp", addr.String(), tlsConfig)
+		return conn, err
+	}
+
+	session, err := mgo.DialWithInfo(dialInfo)
 	if err != nil {
 		panic(err)
 	}
