@@ -76,6 +76,7 @@ var PurchaseMedia = MediaType("application/vnd.purchase+json", func() {
 		// Inherited attributes from PurchasePayload
 		Attribute("TransactionId", String, "Unique transaction identifier", func() {
 			Metadata("struct:tag:json", "transaction_id")
+			Pattern("^[0-9a-fA-F]{24}$")
 		})
 		Attribute("Locator", String, "Operation reference code", func() {
 			Metadata("struct:tag:json", "locator")

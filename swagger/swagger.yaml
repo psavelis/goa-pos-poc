@@ -7,7 +7,7 @@ definitions:
       Href: /purchases/1
       Locator: 0phtqs7
       PurchaseValue: 0.017967071
-      TransactionId: Id mollitia deleniti rem rerum fugiat.
+      TransactionId: 79B29Ecb61EC9F7d59ab7b77
     properties:
       Href:
         description: API href of Purchase
@@ -26,7 +26,8 @@ definitions:
         type: number
       TransactionId:
         description: Unique transaction identifier
-        example: Id mollitia deleniti rem rerum fugiat.
+        example: 79B29Ecb61EC9F7d59ab7b77
+        pattern: ^[0-9a-fA-F]{24}$
         type: string
     required:
     - TransactionId
@@ -38,22 +39,22 @@ definitions:
   PurchasePayload:
     description: Detailed information regarding a POS purchase operation
     example:
-      ID: Consequatur totam quae occaecati deserunt.
-      Locator: luk
-      PurchaseValue: 0.01626923
+      ID: Id mollitia deleniti rem rerum fugiat.
+      Locator: "y"
+      PurchaseValue: 0.010328093
     properties:
       ID:
-        example: Consequatur totam quae occaecati deserunt.
+        example: Id mollitia deleniti rem rerum fugiat.
         type: string
       Locator:
         description: Operation reference code
-        example: luk
+        example: "y"
         maxLength: 30
         minLength: 1
         type: string
       PurchaseValue:
         description: Total amount paid
-        example: 0.01626923
+        example: 0.010328093
         minimum: 0.01
         type: number
     required:
@@ -147,6 +148,7 @@ paths:
       - description: Unique transaction identifier
         in: path
         name: TransactionId
+        pattern: ^[0-9a-fA-F]{24}$
         required: true
         type: string
       produces:

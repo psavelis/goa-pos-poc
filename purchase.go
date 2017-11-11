@@ -53,10 +53,6 @@ func (c *PurchaseController) Show(ctx *app.ShowPurchaseContext) error {
 	err := session.DB("services-pos").C("Purchase").FindId(bson.ObjectIdHex(ctx.TransactionID)).One(&result)
 
 	if err != nil {
-		return ctx.Err()
-	}
-
-	if len(result.Locator) == 0 {
 		return ctx.NotFound()
 	}
 

@@ -75,6 +75,9 @@ func NewShowPurchaseContext(ctx context.Context, r *http.Request, service *goa.S
 	if len(paramTransactionID) > 0 {
 		rawTransactionID := paramTransactionID[0]
 		rctx.TransactionID = rawTransactionID
+		if ok := goa.ValidatePattern(`^[0-9a-fA-F]{24}$`, rctx.TransactionID); !ok {
+			err = goa.MergeErrors(err, goa.InvalidPatternError(`TransactionId`, rctx.TransactionID, `^[0-9a-fA-F]{24}$`))
+		}
 	}
 	return &rctx, err
 }

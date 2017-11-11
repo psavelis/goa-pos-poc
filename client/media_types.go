@@ -58,6 +58,9 @@ func (mt *Purchase) Validate() (err error) {
 	if mt.PurchaseValue < 0.010000 {
 		err = goa.MergeErrors(err, goa.InvalidRangeError(`response.PurchaseValue`, mt.PurchaseValue, 0.010000, true))
 	}
+	if ok := goa.ValidatePattern(`^[0-9a-fA-F]{24}$`, mt.TransactionID); !ok {
+		err = goa.MergeErrors(err, goa.InvalidPatternError(`response.TransactionId`, mt.TransactionID, `^[0-9a-fA-F]{24}$`))
+	}
 	return
 }
 
