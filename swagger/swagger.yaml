@@ -63,11 +63,8 @@ definitions:
     - purchase_value
     title: PurchasePayload
     type: object
-host: localhost:5001
+host: goa-pos-poc.herokuapp.com
 info:
-  contact:
-    name: psavelis
-    url: https://github.com/psavelis
   description: point of sale microservice
   license:
     name: GPL-3.0
@@ -104,7 +101,7 @@ paths:
               pattern: '[a-f0-9]+'
               type: string
       schemes:
-      - http
+      - https
       summary: create Purchase
       tags:
       - Purchase
@@ -129,7 +126,7 @@ paths:
         "404":
           description: Not Found
       schemes:
-      - http
+      - https
       summary: show Purchase
       tags:
       - Purchase
@@ -147,5 +144,5 @@ responses:
   NotFound:
     description: Not Found
 schemes:
-- http
+- https
 swagger: "2.0"

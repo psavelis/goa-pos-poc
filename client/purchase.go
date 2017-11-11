@@ -42,7 +42,7 @@ func (c *Client) NewCreatePurchaseRequest(ctx context.Context, path string, payl
 	}
 	scheme := c.Scheme
 	if scheme == "" {
-		scheme = "http"
+		scheme = "https"
 	}
 	u := url.URL{Host: c.Host, Scheme: scheme, Path: path}
 	req, err := http.NewRequest("POST", u.String(), &body)
@@ -74,7 +74,7 @@ func (c *Client) ShowPurchase(ctx context.Context, path string) (*http.Response,
 func (c *Client) NewShowPurchaseRequest(ctx context.Context, path string) (*http.Request, error) {
 	scheme := c.Scheme
 	if scheme == "" {
-		scheme = "http"
+		scheme = "https"
 	}
 	u := url.URL{Host: c.Host, Scheme: scheme, Path: path}
 	req, err := http.NewRequest("GET", u.String(), nil)

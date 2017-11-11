@@ -7,17 +7,13 @@ var _ = API("pos", func() {
 
 	Title("Point Of Sale (POS)")
 	Version("v1")
-	Contact(func() {
-		Name("psavelis")
-		URL("https://github.com/psavelis")
-	})
 	License(func() {
 		Name("GPL-3.0")
 		URL("https://github.com/psavelis/goa-pos-poc/blob/master/LICENSE")
 	})
 	Description("point of sale microservice")
-	Host("localhost:5001")
-	Scheme("http")
+	Host("goa-pos-poc.herokuapp.com")
+	Scheme("https")
 	BasePath("/pos/v1")
 
 	Consumes("application/json")
@@ -141,4 +137,13 @@ var _ = Resource("Purchase", func() {
 		Response(BadRequest)
 		Response(NotFound)
 	})
+})
+
+var _ = Resource("swagger", func() {
+	Metadata("swagger:generate", "false")
+
+	Origin("*", func() {
+		Methods("GET", "OPTIONS")
+	})
+	Files("/swagger.json", "swagger/swagger.json")
 })
