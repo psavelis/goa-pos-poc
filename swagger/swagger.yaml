@@ -1,17 +1,18 @@
+basePath: /pos/v1
 consumes:
 - application/json
 definitions:
   Purchase:
     description: Purchase media type (default view)
     example:
-      Href: /purchases/1
+      Href: /pos/v1/purchases/5a06839d42e6552b004a7e03
       Locator: 0phtqs7
       PurchaseValue: 0.017967071
-      TransactionId: 79B29Ecb61EC9F7d59ab7b77
+      TransactionID: 79B29Ecb61EC9F7d59ab7b77
     properties:
       Href:
         description: API href of Purchase
-        example: /purchases/1
+        example: /pos/v1/purchases/5a06839d42e6552b004a7e03
         type: string
       Locator:
         description: Operation reference code
@@ -24,17 +25,17 @@ definitions:
         example: 0.017967071
         minimum: 0.01
         type: number
-      TransactionId:
+      TransactionID:
         description: Unique transaction identifier
         example: 79B29Ecb61EC9F7d59ab7b77
         pattern: ^[0-9a-fA-F]{24}$
         type: string
     required:
-    - TransactionId
+    - TransactionID
     - Locator
     - PurchaseValue
     - Href
-    title: 'Mediatype identifier: application/vnd.purchase+json; view=default'
+    title: 'Mediatype identifier: application/vnd.pos.purchase+json; view=default'
     type: object
   PurchasePayload:
     description: Detailed information regarding a POS purchase operation
@@ -130,30 +131,32 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/error'
-        "422":
+        "409":
           description: A conflict arose from your request. (e.g. resource already
             exists)
           headers:
             X-Request-Id:
               pattern: '[a-f0-9]+'
               type: string
+      schemes:
+      - http
       summary: create Purchase
       tags:
       - Purchase
-  /purchases/{TransactionId}:
+  /purchases/{transaction_id}:
     get:
-      description: retrieve an specific purchase
+      description: retrieves a purchase
       operationId: Purchase#show
       parameters:
       - description: Unique transaction identifier
         in: path
-        name: TransactionId
+        name: transaction_id
         pattern: ^[0-9a-fA-F]{24}$
         required: true
         type: string
       produces:
       - application/vnd.goa.error
-      - application/vnd.purchase+json
+      - application/vnd.pos.purchase+json
       responses:
         "200":
           description: OK
@@ -165,37 +168,11 @@ paths:
             $ref: '#/definitions/error'
         "404":
           description: Not Found
+      schemes:
+      - http
       summary: show Purchase
       tags:
       - Purchase
-  /swagger.json:
-    get:
-      operationId: Swagger#/swagger.json
-      responses:
-        "200":
-          description: File downloaded
-          schema:
-            type: file
-      summary: Download swagger/swagger.json
-  /swagger/{filepath}:
-    get:
-      operationId: Swagger#/swagger/*filepath
-      parameters:
-      - description: Relative file path
-        in: path
-        name: filepath
-        required: true
-        type: string
-      responses:
-        "200":
-          description: File downloaded
-          schema:
-            type: file
-        "404":
-          description: File not found
-          schema:
-            $ref: '#/definitions/error'
-      summary: Download swagger
 produces:
 - application/json
 responses:
@@ -207,4 +184,6 @@ responses:
         type: string
   NotFound:
     description: Not Found
+schemes:
+- http
 swagger: "2.0"

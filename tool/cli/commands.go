@@ -22,7 +22,6 @@ import (
 	"log"
 	"net/url"
 	"os"
-	"path"
 	"strconv"
 	"strings"
 	"time"
@@ -42,12 +41,6 @@ type (
 		TransactionID string
 		PrettyPrint   bool
 	}
-
-	// DownloadCommand is the command line data structure for the download command.
-	DownloadCommand struct {
-		// OutFile is the path to the download output file.
-		OutFile string
-	}
 )
 
 // RegisterCommands registers the resource action CLI commands.
@@ -59,7 +52,7 @@ func RegisterCommands(app *cobra.Command, c *client.Client) {
 	}
 	tmp1 := new(CreatePurchaseCommand)
 	sub = &cobra.Command{
-		Use:   `purchase ["/purchases/"]`,
+		Use:   `purchase ["/pos/v1/purchases/"]`,
 		Short: `A pos purchase data`,
 		Long: `A pos purchase data
 
@@ -78,11 +71,11 @@ Payload example:
 	app.AddCommand(command)
 	command = &cobra.Command{
 		Use:   "show",
-		Short: `retrieve an specific purchase`,
+		Short: `retrieves a purchase`,
 	}
 	tmp2 := new(ShowPurchaseCommand)
 	sub = &cobra.Command{
-		Use:   `purchase ["/purchases/TRANSACTIONID"]`,
+		Use:   `purchase ["/pos/v1/purchases/TRANSACTION_ID"]`,
 		Short: `A pos purchase data`,
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp2.Run(c, args) },
 	}
@@ -90,17 +83,6 @@ Payload example:
 	sub.PersistentFlags().BoolVar(&tmp2.PrettyPrint, "pp", false, "Pretty print response body")
 	command.AddCommand(sub)
 	app.AddCommand(command)
-
-	dl := new(DownloadCommand)
-	dlc := &cobra.Command{
-		Use:   "download [PATH]",
-		Short: "Download file with given path",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			return dl.Run(c, args)
-		},
-	}
-	dlc.Flags().StringVar(&dl.OutFile, "out", "", "Output file")
-	app.AddCommand(dlc)
 }
 
 func intFlagVal(name string, parsed int) *int {
@@ -256,60 +238,13 @@ func boolArray(ins []string) ([]bool, error) {
 	return vals, nil
 }
 
-// Run downloads files with given paths.
-func (cmd *DownloadCommand) Run(c *client.Client, args []string) error {
-	var (
-		fnf func(context.Context, string) (int64, error)
-		fnd func(context.Context, string, string) (int64, error)
-
-		rpath   = args[0]
-		outfile = cmd.OutFile
-		logger  = goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
-		ctx     = goa.WithLogger(context.Background(), logger)
-		err     error
-	)
-
-	if rpath[0] != '/' {
-		rpath = "/" + rpath
-	}
-	if rpath == "/swagger.json" {
-		fnf = c.DownloadSwaggerJSON
-		if outfile == "" {
-			outfile = "swagger.json"
-		}
-		goto found
-	}
-	if strings.HasPrefix(rpath, "/swagger/") {
-		fnd = c.DownloadSwagger
-		rpath = rpath[9:]
-		if outfile == "" {
-			_, outfile = path.Split(rpath)
-		}
-		goto found
-	}
-	return fmt.Errorf("don't know how to download %s", rpath)
-found:
-	ctx = goa.WithLogContext(ctx, "file", outfile)
-	if fnf != nil {
-		_, err = fnf(ctx, outfile)
-	} else {
-		_, err = fnd(ctx, rpath, outfile)
-	}
-	if err != nil {
-		goa.LogError(ctx, "failed", "err", err)
-		return err
-	}
-
-	return nil
-}
-
 // Run makes the HTTP request corresponding to the CreatePurchaseCommand command.
 func (cmd *CreatePurchaseCommand) Run(c *client.Client, args []string) error {
 	var path string
 	if len(args) > 0 {
 		path = args[0]
 	} else {
-		path = "/purchases/"
+		path = "/pos/v1/purchases/"
 	}
 	var payload client.PurchasePayload
 	if cmd.Payload != "" {
@@ -342,7 +277,7 @@ func (cmd *ShowPurchaseCommand) Run(c *client.Client, args []string) error {
 	if len(args) > 0 {
 		path = args[0]
 	} else {
-		path = fmt.Sprintf("/purchases/%v", url.QueryEscape(cmd.TransactionID))
+		path = fmt.Sprintf("/pos/v1/purchases/%v", url.QueryEscape(cmd.TransactionID))
 	}
 	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
 	ctx := goa.WithLogger(context.Background(), logger)
@@ -359,5 +294,5 @@ func (cmd *ShowPurchaseCommand) Run(c *client.Client, args []string) error {
 // RegisterFlags registers the command flags with the command line.
 func (cmd *ShowPurchaseCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
 	var transactionID string
-	cc.Flags().StringVar(&cmd.TransactionID, "TransactionId", transactionID, `Unique transaction identifier`)
+	cc.Flags().StringVar(&cmd.TransactionID, "transaction_id", transactionID, `Unique transaction identifier`)
 }

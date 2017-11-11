@@ -61,6 +61,7 @@ func (c *PurchaseController) Show(ctx *app.ShowPurchaseContext) error {
 		return ctx.NotFound()
 	}
 
+	result.TransactionID = ctx.TransactionID
 	result.Href = app.PurchaseHref(ctx.TransactionID)
 
 	return ctx.OK(&result)

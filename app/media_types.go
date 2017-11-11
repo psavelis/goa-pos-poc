@@ -17,22 +17,22 @@ import (
 
 // Purchase media type (default view)
 //
-// Identifier: application/vnd.purchase+json; view=default
+// Identifier: application/vnd.pos.purchase+json; view=default
 type Purchase struct {
 	// API href of Purchase
 	Href string `json:"href"`
 	// Operation reference code
 	Locator string `bson:"locator,omitempty" json:"locator,locator"`
 	// Total amount paid
-	PurchaseValue float64 `bson:"purchase_value,omitempty" json:"purchase_value,purchase_value"`
+	PurchaseValue float64 `bson:"purchase_value,omitempty" json:"purchase_value"`
 	// Unique transaction identifier
-	TransactionID string `json:"transaction_id"`
+	TransactionID string `bson:"_id,omitempty" json:"transaction_id"`
 }
 
 // Validate validates the Purchase media type instance.
 func (mt *Purchase) Validate() (err error) {
 	if mt.TransactionID == "" {
-		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "TransactionId"))
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "TransactionID"))
 	}
 	if mt.Locator == "" {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "Locator"))
@@ -51,7 +51,7 @@ func (mt *Purchase) Validate() (err error) {
 		err = goa.MergeErrors(err, goa.InvalidRangeError(`response.PurchaseValue`, mt.PurchaseValue, 0.010000, true))
 	}
 	if ok := goa.ValidatePattern(`^[0-9a-fA-F]{24}$`, mt.TransactionID); !ok {
-		err = goa.MergeErrors(err, goa.InvalidPatternError(`response.TransactionId`, mt.TransactionID, `^[0-9a-fA-F]{24}$`))
+		err = goa.MergeErrors(err, goa.InvalidPatternError(`response.TransactionID`, mt.TransactionID, `^[0-9a-fA-F]{24}$`))
 	}
 	return
 }

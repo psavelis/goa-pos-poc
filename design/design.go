@@ -8,6 +8,8 @@ var _ = API("pos", func() {
 	Version("v1")
 	Description("point of sale microservice")
 	Host("localhost:5001")
+	Scheme("http")
+	BasePath("/pos/v1")
 
 	Consumes("application/json")
 	Produces("application/json")
@@ -30,7 +32,7 @@ var _ = API("pos", func() {
 			})
 		})
 
-		Status(422)
+		Status(409)
 	})
 })
 
@@ -47,6 +49,7 @@ var PurchasePayload = Type("PurchasePayload", func() {
 	Attribute("Locator", String, "Operation reference code", func() {
 		Metadata("struct:tag:json", "locator")
 		Metadata("struct:tag:bson", "locator,omitempty")
+		Metadata("swagger:tag:json", "locator")
 
 		MinLength(1)
 		MaxLength(30)
@@ -55,42 +58,46 @@ var PurchasePayload = Type("PurchasePayload", func() {
 	Attribute("PurchaseValue", Number, "Total amount paid", func() {
 		Metadata("struct:tag:json", "purchase_value")
 		Metadata("struct:tag:bson", "purchase_value,omitempty")
-
+		Metadata("swagger:tag:json", "purchase_value")
 		Minimum(0.01)
 	})
 
 	Required("Locator", "PurchaseValue")
 })
 
-var PurchaseMedia = MediaType("application/vnd.purchase+json", func() {
+var PurchaseMedia = MediaType("application/vnd.pos.purchase+json", func() {
 	TypeName("Purchase")
 	Reference(PurchasePayload)
 
 	Attributes(func() {
 
-		Attribute("Href", String, "API href of Purchase", func() {
-			Example("/purchases/1")
-			Metadata("struct:tag:json", "href")
-		})
-
 		// Inherited attributes from PurchasePayload
-		Attribute("TransactionId", String, "Unique transaction identifier", func() {
+		Attribute("TransactionID", String, "Unique transaction identifier", func() {
 			Metadata("struct:tag:json", "transaction_id")
+			Metadata("swagger:tag:json", "transaction_id")
+			Metadata("struct:tag:bson", "_id,omitempty")
 			Pattern("^[0-9a-fA-F]{24}$")
 		})
 		Attribute("Locator", String, "Operation reference code", func() {
 			Metadata("struct:tag:json", "locator")
+			Metadata("swagger:tag:json", "locator")
 		})
 
 		Attribute("PurchaseValue", Number, "Total amount paid", func() {
-			Metadata("struct:tag:json", "purchase_value")
+			Metadata("swagger:tag:json", "purchase_value")
 		})
 
-		Required("TransactionId", "Locator", "PurchaseValue", "Href")
+		Attribute("Href", String, "API href of Purchase", func() {
+			Example("/pos/v1/purchases/5a06839d42e6552b004a7e03")
+			Metadata("struct:tag:json", "href")
+			Metadata("swagger:tag:json", "href")
+		})
+
+		Required("TransactionID", "Locator", "PurchaseValue", "Href")
 	})
 
 	View("default", func() {
-		Attribute("TransactionId")
+		Attribute("TransactionID")
 		Attribute("Locator")
 		Attribute("PurchaseValue")
 		Attribute("Href")
@@ -112,25 +119,16 @@ var _ = Resource("Purchase", func() {
 	})
 
 	Action("show", func() {
-		Description("retrieve an specific purchase")
-		Routing(GET("/:TransactionId"))
+		Description("retrieves a purchase")
+		Routing(GET("/:transaction_id"))
 		Params(func() {
-			Param("TransactionId", String)
+			Param("transaction_id", String, "Unique transaction identifier", func() {
+				Pattern("^[0-9a-fA-F]{24}$")
+			})
 		})
 
 		Response(OK, PurchaseMedia)
 		Response(NotFound)
 		Response(BadRequest, ErrorMedia)
 	})
-})
-
-var _ = Resource("Swagger", func() {
-	Description("The API Swagger specification")
-
-	Origin("*", func() {
-		Methods("GET", "OPTIONS")
-	})
-
-	Files("/swagger.json", "swagger/swagger.json")
-	Files("swagger/*filepath", "swagger")
 })

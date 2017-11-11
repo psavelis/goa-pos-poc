@@ -22,7 +22,7 @@ type purchasePayload struct {
 	// Operation reference code
 	Locator *string `bson:"locator,omitempty" json:"locator,locator"`
 	// Total amount paid
-	PurchaseValue *float64 `bson:"purchase_value,omitempty" json:"purchase_value,purchase_value"`
+	PurchaseValue *float64 `bson:"purchase_value,omitempty" json:"purchase_value"`
 }
 
 // Validate validates the purchasePayload type instance.
@@ -72,7 +72,7 @@ type PurchasePayload struct {
 	// Operation reference code
 	Locator string `bson:"locator,omitempty" json:"locator,locator"`
 	// Total amount paid
-	PurchaseValue float64 `bson:"purchase_value,omitempty" json:"purchase_value,purchase_value"`
+	PurchaseValue float64 `bson:"purchase_value,omitempty" json:"purchase_value"`
 }
 
 // Validate validates the PurchasePayload type instance.

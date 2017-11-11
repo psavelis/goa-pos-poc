@@ -21,7 +21,7 @@ import (
 // CreatePurchasePath computes a request path to the create action of Purchase.
 func CreatePurchasePath() string {
 
-	return fmt.Sprintf("/purchases/")
+	return fmt.Sprintf("/pos/v1/purchases/")
 }
 
 // creates a purchase
@@ -58,10 +58,10 @@ func (c *Client) NewCreatePurchaseRequest(ctx context.Context, path string, payl
 func ShowPurchasePath(transactionID string) string {
 	param0 := transactionID
 
-	return fmt.Sprintf("/purchases/%s", param0)
+	return fmt.Sprintf("/pos/v1/purchases/%s", param0)
 }
 
-// retrieve an specific purchase
+// retrieves a purchase
 func (c *Client) ShowPurchase(ctx context.Context, path string) (*http.Response, error) {
 	req, err := c.NewShowPurchaseRequest(ctx, path)
 	if err != nil {

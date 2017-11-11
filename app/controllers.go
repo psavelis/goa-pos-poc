@@ -13,7 +13,6 @@ package app
 import (
 	"context"
 	"github.com/goadesign/goa"
-	"github.com/goadesign/goa/cors"
 	"net/http"
 )
 
@@ -58,8 +57,8 @@ func MountPurchaseController(service *goa.Service, ctrl PurchaseController) {
 		}
 		return ctrl.Create(rctx)
 	}
-	service.Mux.Handle("POST", "/purchases/", ctrl.MuxHandler("create", h, unmarshalCreatePurchasePayload))
-	service.LogInfo("mount", "ctrl", "Purchase", "action", "Create", "route", "POST /purchases/")
+	service.Mux.Handle("POST", "/pos/v1/purchases/", ctrl.MuxHandler("create", h, unmarshalCreatePurchasePayload))
+	service.LogInfo("mount", "ctrl", "Purchase", "action", "Create", "route", "POST /pos/v1/purchases/")
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		// Check if there was an error loading the request
@@ -73,8 +72,8 @@ func MountPurchaseController(service *goa.Service, ctrl PurchaseController) {
 		}
 		return ctrl.Show(rctx)
 	}
-	service.Mux.Handle("GET", "/purchases/:TransactionId", ctrl.MuxHandler("show", h, nil))
-	service.LogInfo("mount", "ctrl", "Purchase", "action", "Show", "route", "GET /purchases/:TransactionId")
+	service.Mux.Handle("GET", "/pos/v1/purchases/:transaction_id", ctrl.MuxHandler("show", h, nil))
+	service.LogInfo("mount", "ctrl", "Purchase", "action", "Show", "route", "GET /pos/v1/purchases/:transaction_id")
 }
 
 // unmarshalCreatePurchasePayload unmarshals the request body into the context request data Payload field.
@@ -90,57 +89,4 @@ func unmarshalCreatePurchasePayload(ctx context.Context, service *goa.Service, r
 	}
 	goa.ContextRequest(ctx).Payload = payload.Publicize()
 	return nil
-}
-
-// SwaggerController is the controller interface for the Swagger actions.
-type SwaggerController interface {
-	goa.Muxer
-	goa.FileServer
-}
-
-// MountSwaggerController "mounts" a Swagger resource controller on the given service.
-func MountSwaggerController(service *goa.Service, ctrl SwaggerController) {
-	initService(service)
-	var h goa.Handler
-	service.Mux.Handle("OPTIONS", "/swagger/*filepath", ctrl.MuxHandler("preflight", handleSwaggerOrigin(cors.HandlePreflight()), nil))
-	service.Mux.Handle("OPTIONS", "/swagger.json", ctrl.MuxHandler("preflight", handleSwaggerOrigin(cors.HandlePreflight()), nil))
-
-	h = ctrl.FileHandler("/swagger/*filepath", "swagger")
-	h = handleSwaggerOrigin(h)
-	service.Mux.Handle("GET", "/swagger/*filepath", ctrl.MuxHandler("serve", h, nil))
-	service.LogInfo("mount", "ctrl", "Swagger", "files", "swagger", "route", "GET /swagger/*filepath")
-
-	h = ctrl.FileHandler("/swagger.json", "swagger/swagger.json")
-	h = handleSwaggerOrigin(h)
-	service.Mux.Handle("GET", "/swagger.json", ctrl.MuxHandler("serve", h, nil))
-	service.LogInfo("mount", "ctrl", "Swagger", "files", "swagger/swagger.json", "route", "GET /swagger.json")
-
-	h = ctrl.FileHandler("/swagger/", "swagger\\index.html")
-	h = handleSwaggerOrigin(h)
-	service.Mux.Handle("GET", "/swagger/", ctrl.MuxHandler("serve", h, nil))
-	service.LogInfo("mount", "ctrl", "Swagger", "files", "swagger\\index.html", "route", "GET /swagger/")
-}
-
-// handleSwaggerOrigin applies the CORS response headers corresponding to the origin.
-func handleSwaggerOrigin(h goa.Handler) goa.Handler {
-
-	return func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
-		origin := req.Header.Get("Origin")
-		if origin == "" {
-			// Not a CORS request
-			return h(ctx, rw, req)
-		}
-		if cors.MatchOrigin(origin, "*") {
-			ctx = goa.WithLogContext(ctx, "origin", origin)
-			rw.Header().Set("Access-Control-Allow-Origin", origin)
-			rw.Header().Set("Access-Control-Allow-Credentials", "false")
-			if acrm := req.Header.Get("Access-Control-Request-Method"); acrm != "" {
-				// We are handling a preflight request
-				rw.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
-			}
-			return h(ctx, rw, req)
-		}
-
-		return h(ctx, rw, req)
-	}
 }

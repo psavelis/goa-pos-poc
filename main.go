@@ -67,8 +67,8 @@ func main() {
 	c := controllers.NewPurchaseController(service, database)
 	app.MountPurchaseController(service, c)
 
-	cs := controllers.NewSwaggerController(service)
-	app.MountSwaggerController(service, cs)
+	// cs := controllers.NewSwaggerController(service)
+	// app.MountSwaggerController(service, cs)
 
 	// Start service
 	if err := service.ListenAndServe(":5001"); err != nil {

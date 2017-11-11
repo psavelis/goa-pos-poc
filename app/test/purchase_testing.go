@@ -59,7 +59,7 @@ func CreatePurchaseBadRequest(t goatest.TInterface, ctx context.Context, service
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/purchases/"),
+		Path: fmt.Sprintf("/pos/v1/purchases/"),
 	}
 	req, _err := http.NewRequest("POST", u.String(), nil)
 	if _err != nil {
@@ -135,7 +135,7 @@ func CreatePurchaseConflict(t goatest.TInterface, ctx context.Context, service *
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/purchases/"),
+		Path: fmt.Sprintf("/pos/v1/purchases/"),
 	}
 	req, _err := http.NewRequest("POST", u.String(), nil)
 	if _err != nil {
@@ -159,8 +159,8 @@ func CreatePurchaseConflict(t goatest.TInterface, ctx context.Context, service *
 	if __err != nil {
 		t.Fatalf("controller returned %+v, logs:\n%s", __err, logBuf.String())
 	}
-	if rw.Code != 422 {
-		t.Errorf("invalid response status code: got %+v, expected 422", rw.Code)
+	if rw.Code != 409 {
+		t.Errorf("invalid response status code: got %+v, expected 409", rw.Code)
 	}
 
 	// Return results
@@ -203,7 +203,7 @@ func CreatePurchaseCreated(t goatest.TInterface, ctx context.Context, service *g
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/purchases/"),
+		Path: fmt.Sprintf("/pos/v1/purchases/"),
 	}
 	req, _err := http.NewRequest("POST", u.String(), nil)
 	if _err != nil {
@@ -260,14 +260,14 @@ func ShowPurchaseBadRequest(t goatest.TInterface, ctx context.Context, service *
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/purchases/%v", transactionID),
+		Path: fmt.Sprintf("/pos/v1/purchases/%v", transactionID),
 	}
 	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {
 		panic("invalid test " + err.Error()) // bug
 	}
 	prms := url.Values{}
-	prms["TransactionId"] = []string{fmt.Sprintf("%v", transactionID)}
+	prms["transaction_id"] = []string{fmt.Sprintf("%v", transactionID)}
 	if ctx == nil {
 		ctx = context.Background()
 	}
@@ -325,14 +325,14 @@ func ShowPurchaseNotFound(t goatest.TInterface, ctx context.Context, service *go
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/purchases/%v", transactionID),
+		Path: fmt.Sprintf("/pos/v1/purchases/%v", transactionID),
 	}
 	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {
 		panic("invalid test " + err.Error()) // bug
 	}
 	prms := url.Values{}
-	prms["TransactionId"] = []string{fmt.Sprintf("%v", transactionID)}
+	prms["transaction_id"] = []string{fmt.Sprintf("%v", transactionID)}
 	if ctx == nil {
 		ctx = context.Background()
 	}
@@ -382,14 +382,14 @@ func ShowPurchaseOK(t goatest.TInterface, ctx context.Context, service *goa.Serv
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/purchases/%v", transactionID),
+		Path: fmt.Sprintf("/pos/v1/purchases/%v", transactionID),
 	}
 	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {
 		panic("invalid test " + err.Error()) // bug
 	}
 	prms := url.Values{}
-	prms["TransactionId"] = []string{fmt.Sprintf("%v", transactionID)}
+	prms["transaction_id"] = []string{fmt.Sprintf("%v", transactionID)}
 	if ctx == nil {
 		ctx = context.Background()
 	}

@@ -48,9 +48,9 @@ func (ctx *CreatePurchaseContext) BadRequest(r error) error {
 	return ctx.ResponseData.Service.Send(ctx.Context, 400, r)
 }
 
-// Conflict sends a HTTP response with status code 422.
+// Conflict sends a HTTP response with status code 409.
 func (ctx *CreatePurchaseContext) Conflict() error {
-	ctx.ResponseData.WriteHeader(422)
+	ctx.ResponseData.WriteHeader(409)
 	return nil
 }
 
@@ -71,12 +71,12 @@ func NewShowPurchaseContext(ctx context.Context, r *http.Request, service *goa.S
 	req := goa.ContextRequest(ctx)
 	req.Request = r
 	rctx := ShowPurchaseContext{Context: ctx, ResponseData: resp, RequestData: req}
-	paramTransactionID := req.Params["TransactionId"]
+	paramTransactionID := req.Params["transaction_id"]
 	if len(paramTransactionID) > 0 {
 		rawTransactionID := paramTransactionID[0]
 		rctx.TransactionID = rawTransactionID
 		if ok := goa.ValidatePattern(`^[0-9a-fA-F]{24}$`, rctx.TransactionID); !ok {
-			err = goa.MergeErrors(err, goa.InvalidPatternError(`TransactionId`, rctx.TransactionID, `^[0-9a-fA-F]{24}$`))
+			err = goa.MergeErrors(err, goa.InvalidPatternError(`transaction_id`, rctx.TransactionID, `^[0-9a-fA-F]{24}$`))
 		}
 	}
 	return &rctx, err
@@ -84,7 +84,7 @@ func NewShowPurchaseContext(ctx context.Context, r *http.Request, service *goa.S
 
 // OK sends a HTTP response with status code 200.
 func (ctx *ShowPurchaseContext) OK(r *Purchase) error {
-	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.purchase+json")
+	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.pos.purchase+json")
 	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
 }
 
