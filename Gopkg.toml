@@ -28,3 +28,13 @@
 [[constraint]]
   name = "github.com/spf13/cobra"
   version = "0.0.1"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/heroku/go-getting-started"
+
+[metadata.heroku]
+  root-package = "github.com/psavelis/goa-pos-poc"
+  go-version = "go1.8.3"
+  install = [ "./cmd/...", "./foo" ]
+  ensure = "false"
