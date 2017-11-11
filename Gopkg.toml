@@ -36,5 +36,5 @@
 [metadata.heroku]
   root-package = "github.com/psavelis/goa-pos-poc"
   go-version = "go1.8.3"
-  install = [ "./cmd/...", "./foo" ]
+  install = [ "./cmd/...", "." ]
   ensure = "false"
