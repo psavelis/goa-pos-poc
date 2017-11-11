@@ -102,7 +102,7 @@ var PurchaseMedia = MediaType("application/json", func() {
 			Metadata("struct:field:name", "Href")
 		})
 
-		Required("transaction_id", "locator", "purchase_value")
+		Required("transaction_id", "locator", "purchase_value", "href")
 	})
 
 	View("default", func() {

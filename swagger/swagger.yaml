@@ -2,6 +2,41 @@ basePath: /pos/v1
 consumes:
 - application/json
 definitions:
+  Purchase:
+    description: Purchase media type (default view)
+    example:
+      href: pos/v1/purchases/5a06839d42e6552b004a7e03
+      locator: MPOS00123820-UAT-A02
+      purchase_value: 119.99
+      transaction_id: 79B29Ecb61EC9F7d59ab7b77
+    properties:
+      href:
+        description: API href of Purchase
+        example: pos/v1/purchases/5a06839d42e6552b004a7e03
+        type: string
+      locator:
+        description: Operation reference code
+        example: MPOS00123820-UAT-A02
+        maxLength: 30
+        minLength: 1
+        type: string
+      purchase_value:
+        description: Total amount paid
+        example: 119.99
+        minimum: 0.01
+        type: number
+      transaction_id:
+        description: Unique transaction identifier
+        example: 79B29Ecb61EC9F7d59ab7b77
+        pattern: ^[0-9a-fA-F]{24}$
+        type: string
+    required:
+    - transaction_id
+    - locator
+    - purchase_value
+    - href
+    title: 'Mediatype identifier: application/json; view=default'
+    type: object
   PurchasePayload:
     description: Detailed information regarding a POS purchase operation
     example:
@@ -28,43 +63,6 @@ definitions:
     - purchase_value
     title: PurchasePayload
     type: object
-  error:
-    description: Error response media type (default view)
-    example:
-      code: invalid_value
-      detail: Value of ID must be an integer
-      id: 3F1FKVRR
-      meta:
-        timestamp: 1.458609e+09
-      status: "400"
-    properties:
-      code:
-        description: an application-specific error code, expressed as a string value.
-        example: invalid_value
-        type: string
-      detail:
-        description: a human-readable explanation specific to this occurrence of the
-          problem.
-        example: Value of ID must be an integer
-        type: string
-      id:
-        description: a unique identifier for this particular occurrence of the problem.
-        example: 3F1FKVRR
-        type: string
-      meta:
-        additionalProperties: true
-        description: a meta object containing non-standard meta-information about
-          the error.
-        example:
-          timestamp: 1.458609e+09
-        type: object
-      status:
-        description: the HTTP status code applicable to this problem, expressed as
-          a string value.
-        example: "400"
-        type: string
-    title: 'Mediatype identifier: application/vnd.goa.error; view=default'
-    type: object
 host: localhost:5001
 info:
   contact:
@@ -88,9 +86,6 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/PurchasePayload'
-      produces:
-      - application/vnd.goa.error
-      - application/vnd.goa.error
       responses:
         "201":
           description: Resource created
@@ -124,15 +119,11 @@ paths:
         pattern: ^[0-9a-fA-F]{24}$
         required: true
         type: string
-      produces:
-      - application/vnd.goa.error
-      - application/vnd.goa.error
-      - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/error'
+            $ref: '#/definitions/Purchase'
         "400":
           description: Bad Request
         "404":
@@ -145,12 +136,16 @@ paths:
 produces:
 - application/json
 responses:
+  BadRequest:
+    description: Bad Request
   Conflict:
     description: A conflict arose from your request. (e.g. resource already exists)
     headers:
       X-Request-Id:
         pattern: '[a-f0-9]+'
         type: string
+  NotFound:
+    description: Not Found
 schemes:
 - http
 swagger: "2.0"

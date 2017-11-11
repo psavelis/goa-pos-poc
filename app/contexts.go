@@ -43,15 +43,15 @@ func (ctx *CreatePurchaseContext) Created() error {
 }
 
 // BadRequest sends a HTTP response with status code 400.
-func (ctx *CreatePurchaseContext) BadRequest(r error) error {
-	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
-	return ctx.ResponseData.Service.Send(ctx.Context, 400, r)
+func (ctx *CreatePurchaseContext) BadRequest() error {
+	ctx.ResponseData.WriteHeader(400)
+	return nil
 }
 
 // Conflict sends a HTTP response with status code 409.
-func (ctx *CreatePurchaseContext) Conflict(r error) error {
-	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
-	return ctx.ResponseData.Service.Send(ctx.Context, 409, r)
+func (ctx *CreatePurchaseContext) Conflict() error {
+	ctx.ResponseData.WriteHeader(409)
+	return nil
 }
 
 // ShowPurchaseContext provides the Purchase show action context.
@@ -84,18 +84,18 @@ func NewShowPurchaseContext(ctx context.Context, r *http.Request, service *goa.S
 
 // OK sends a HTTP response with status code 200.
 func (ctx *ShowPurchaseContext) OK(r *Purchase) error {
-	ctx.ResponseData.Header().Set("Content-Type", "")
+	ctx.ResponseData.Header().Set("Content-Type", "application/json")
 	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
 }
 
 // BadRequest sends a HTTP response with status code 400.
-func (ctx *ShowPurchaseContext) BadRequest(r error) error {
-	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
-	return ctx.ResponseData.Service.Send(ctx.Context, 400, r)
+func (ctx *ShowPurchaseContext) BadRequest() error {
+	ctx.ResponseData.WriteHeader(400)
+	return nil
 }
 
 // NotFound sends a HTTP response with status code 404.
-func (ctx *ShowPurchaseContext) NotFound(r error) error {
-	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
-	return ctx.ResponseData.Service.Send(ctx.Context, 404, r)
+func (ctx *ShowPurchaseContext) NotFound() error {
+	ctx.ResponseData.WriteHeader(404)
+	return nil
 }

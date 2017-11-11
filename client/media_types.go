@@ -13,11 +13,53 @@ package client
 import (
 	"github.com/goadesign/goa"
 	"net/http"
+	"unicode/utf8"
 )
 
-// DecodeErrorResponse decodes the ErrorResponse instance encoded in resp body.
-func (c *Client) DecodeErrorResponse(resp *http.Response) (*goa.ErrorResponse, error) {
-	var decoded goa.ErrorResponse
+// Purchase media type (default view)
+//
+// Identifier: application/json; view=default
+type Purchase struct {
+	// API href of Purchase
+	Href string `form:"href" json:"href" xml:"href"`
+	// Operation reference code
+	Locator string `bson:"locator,omitempty"`
+	// Total amount paid
+	PurchaseValue float64 `bson:"purchase_value,omitempty"`
+	// Unique transaction identifier
+	TransactionID string `bson:"_id,omitempty"`
+}
+
+// Validate validates the Purchase media type instance.
+func (mt *Purchase) Validate() (err error) {
+	if mt.TransactionID == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "transaction_id"))
+	}
+	if mt.Locator == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "locator"))
+	}
+
+	if mt.Href == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "href"))
+	}
+	if utf8.RuneCountInString(mt.Locator) < 1 {
+		err = goa.MergeErrors(err, goa.InvalidLengthError(`response.locator`, mt.Locator, utf8.RuneCountInString(mt.Locator), 1, true))
+	}
+	if utf8.RuneCountInString(mt.Locator) > 30 {
+		err = goa.MergeErrors(err, goa.InvalidLengthError(`response.locator`, mt.Locator, utf8.RuneCountInString(mt.Locator), 30, false))
+	}
+	if mt.PurchaseValue < 0.010000 {
+		err = goa.MergeErrors(err, goa.InvalidRangeError(`response.purchase_value`, mt.PurchaseValue, 0.010000, true))
+	}
+	if ok := goa.ValidatePattern(`^[0-9a-fA-F]{24}$`, mt.TransactionID); !ok {
+		err = goa.MergeErrors(err, goa.InvalidPatternError(`response.transaction_id`, mt.TransactionID, `^[0-9a-fA-F]{24}$`))
+	}
+	return
+}
+
+// DecodePurchase decodes the Purchase instance encoded in resp body.
+func (c *Client) DecodePurchase(resp *http.Response) (*Purchase, error) {
+	var decoded Purchase
 	err := c.Decoder.Decode(&decoded, resp.Body, resp.Header.Get("Content-Type"))
 	return &decoded, err
 }
