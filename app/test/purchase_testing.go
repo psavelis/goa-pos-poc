@@ -100,10 +100,10 @@ func CreatePurchaseBadRequest(t goatest.TInterface, ctx context.Context, service
 }
 
 // CreatePurchaseConflict runs the method Create of the given controller with the given parameters and payload.
-// It returns the response writer so it's possible to inspect the response headers.
+// It returns the response writer so it's possible to inspect the response headers and the media type struct written to the response.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func CreatePurchaseConflict(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.PurchaseController, payload *app.PurchasePayload) http.ResponseWriter {
+func CreatePurchaseConflict(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.PurchaseController, payload *app.PurchasePayload) (http.ResponseWriter, error) {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -128,8 +128,7 @@ func CreatePurchaseConflict(t goatest.TInterface, ctx context.Context, service *
 		if !ok {
 			panic(err) // bug
 		}
-		t.Errorf("unexpected payload validation error: %+v", e)
-		return nil
+		return nil, e
 	}
 
 	// Setup request context
@@ -162,9 +161,17 @@ func CreatePurchaseConflict(t goatest.TInterface, ctx context.Context, service *
 	if rw.Code != 409 {
 		t.Errorf("invalid response status code: got %+v, expected 409", rw.Code)
 	}
+	var mt error
+	if resp != nil {
+		var _ok bool
+		mt, _ok = resp.(error)
+		if !_ok {
+			t.Fatalf("invalid response media: got variable of type %T, value %+v, expected instance of error", resp, resp)
+		}
+	}
 
 	// Return results
-	return rw
+	return rw, mt
 }
 
 // CreatePurchaseCreated runs the method Create of the given controller with the given parameters and payload.
@@ -301,10 +308,10 @@ func ShowPurchaseBadRequest(t goatest.TInterface, ctx context.Context, service *
 }
 
 // ShowPurchaseNotFound runs the method Show of the given controller with the given parameters.
-// It returns the response writer so it's possible to inspect the response headers.
+// It returns the response writer so it's possible to inspect the response headers and the media type struct written to the response.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func ShowPurchaseNotFound(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.PurchaseController, transactionID string) http.ResponseWriter {
+func ShowPurchaseNotFound(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.PurchaseController, transactionID string) (http.ResponseWriter, error) {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -352,16 +359,24 @@ func ShowPurchaseNotFound(t goatest.TInterface, ctx context.Context, service *go
 	if rw.Code != 404 {
 		t.Errorf("invalid response status code: got %+v, expected 404", rw.Code)
 	}
+	var mt error
+	if resp != nil {
+		var ok bool
+		mt, ok = resp.(error)
+		if !ok {
+			t.Fatalf("invalid response media: got variable of type %T, value %+v, expected instance of error", resp, resp)
+		}
+	}
 
 	// Return results
-	return rw
+	return rw, mt
 }
 
 // ShowPurchaseOK runs the method Show of the given controller with the given parameters.
-// It returns the response writer so it's possible to inspect the response headers and the media type struct written to the response.
+// It returns the response writer so it's possible to inspect the response headers.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func ShowPurchaseOK(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.PurchaseController, transactionID string) (http.ResponseWriter, *app.Purchase) {
+func ShowPurchaseOK(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.PurchaseController, transactionID string) http.ResponseWriter {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -409,19 +424,7 @@ func ShowPurchaseOK(t goatest.TInterface, ctx context.Context, service *goa.Serv
 	if rw.Code != 200 {
 		t.Errorf("invalid response status code: got %+v, expected 200", rw.Code)
 	}
-	var mt *app.Purchase
-	if resp != nil {
-		var ok bool
-		mt, ok = resp.(*app.Purchase)
-		if !ok {
-			t.Fatalf("invalid response media: got variable of type %T, value %+v, expected instance of app.Purchase", resp, resp)
-		}
-		_err = mt.Validate()
-		if _err != nil {
-			t.Errorf("invalid response media type: %s", _err)
-		}
-	}
 
 	// Return results
-	return rw, mt
+	return rw
 }

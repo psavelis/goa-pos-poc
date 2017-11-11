@@ -18,34 +18,34 @@ import (
 
 // Detailed information regarding a POS purchase operation
 type purchasePayload struct {
-	ID *bson.ObjectId `bson:"_id,omitempty" json:"id"`
+	ID *bson.ObjectId `bson:"_id,omitempty"`
 	// Operation reference code
-	Locator *string `bson:"locator,omitempty" json:"locator,locator"`
+	Locator *string `bson:"locator,omitempty"`
 	// Total amount paid
-	PurchaseValue *float64 `bson:"purchase_value,omitempty" json:"purchase_value"`
+	PurchaseValue *float64 `bson:"purchase_value,omitempty"`
 }
 
 // Validate validates the purchasePayload type instance.
 func (ut *purchasePayload) Validate() (err error) {
 	if ut.Locator == nil {
-		err = goa.MergeErrors(err, goa.MissingAttributeError(`request`, "Locator"))
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`request`, "locator"))
 	}
 	if ut.PurchaseValue == nil {
-		err = goa.MergeErrors(err, goa.MissingAttributeError(`request`, "PurchaseValue"))
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`request`, "purchase_value"))
 	}
 	if ut.Locator != nil {
 		if utf8.RuneCountInString(*ut.Locator) < 1 {
-			err = goa.MergeErrors(err, goa.InvalidLengthError(`request.Locator`, *ut.Locator, utf8.RuneCountInString(*ut.Locator), 1, true))
+			err = goa.MergeErrors(err, goa.InvalidLengthError(`request.locator`, *ut.Locator, utf8.RuneCountInString(*ut.Locator), 1, true))
 		}
 	}
 	if ut.Locator != nil {
 		if utf8.RuneCountInString(*ut.Locator) > 30 {
-			err = goa.MergeErrors(err, goa.InvalidLengthError(`request.Locator`, *ut.Locator, utf8.RuneCountInString(*ut.Locator), 30, false))
+			err = goa.MergeErrors(err, goa.InvalidLengthError(`request.locator`, *ut.Locator, utf8.RuneCountInString(*ut.Locator), 30, false))
 		}
 	}
 	if ut.PurchaseValue != nil {
 		if *ut.PurchaseValue < 0.010000 {
-			err = goa.MergeErrors(err, goa.InvalidRangeError(`request.PurchaseValue`, *ut.PurchaseValue, 0.010000, true))
+			err = goa.MergeErrors(err, goa.InvalidRangeError(`request.purchase_value`, *ut.PurchaseValue, 0.010000, true))
 		}
 	}
 	return
@@ -68,27 +68,27 @@ func (ut *purchasePayload) Publicize() *PurchasePayload {
 
 // Detailed information regarding a POS purchase operation
 type PurchasePayload struct {
-	ID *bson.ObjectId `bson:"_id,omitempty" json:"id"`
+	ID *bson.ObjectId `bson:"_id,omitempty"`
 	// Operation reference code
-	Locator string `bson:"locator,omitempty" json:"locator,locator"`
+	Locator string `bson:"locator,omitempty"`
 	// Total amount paid
-	PurchaseValue float64 `bson:"purchase_value,omitempty" json:"purchase_value"`
+	PurchaseValue float64 `bson:"purchase_value,omitempty"`
 }
 
 // Validate validates the PurchasePayload type instance.
 func (ut *PurchasePayload) Validate() (err error) {
 	if ut.Locator == "" {
-		err = goa.MergeErrors(err, goa.MissingAttributeError(`type`, "Locator"))
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`type`, "locator"))
 	}
 
 	if utf8.RuneCountInString(ut.Locator) < 1 {
-		err = goa.MergeErrors(err, goa.InvalidLengthError(`type.Locator`, ut.Locator, utf8.RuneCountInString(ut.Locator), 1, true))
+		err = goa.MergeErrors(err, goa.InvalidLengthError(`type.locator`, ut.Locator, utf8.RuneCountInString(ut.Locator), 1, true))
 	}
 	if utf8.RuneCountInString(ut.Locator) > 30 {
-		err = goa.MergeErrors(err, goa.InvalidLengthError(`type.Locator`, ut.Locator, utf8.RuneCountInString(ut.Locator), 30, false))
+		err = goa.MergeErrors(err, goa.InvalidLengthError(`type.locator`, ut.Locator, utf8.RuneCountInString(ut.Locator), 30, false))
 	}
 	if ut.PurchaseValue < 0.010000 {
-		err = goa.MergeErrors(err, goa.InvalidRangeError(`type.PurchaseValue`, ut.PurchaseValue, 0.010000, true))
+		err = goa.MergeErrors(err, goa.InvalidRangeError(`type.purchase_value`, ut.PurchaseValue, 0.010000, true))
 	}
 	return
 }

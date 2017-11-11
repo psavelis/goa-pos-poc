@@ -2,65 +2,30 @@ basePath: /pos/v1
 consumes:
 - application/json
 definitions:
-  Purchase:
-    description: Purchase media type (default view)
-    example:
-      Href: /pos/v1/purchases/5a06839d42e6552b004a7e03
-      Locator: 0phtqs7
-      PurchaseValue: 0.017967071
-      TransactionID: 79B29Ecb61EC9F7d59ab7b77
-    properties:
-      Href:
-        description: API href of Purchase
-        example: /pos/v1/purchases/5a06839d42e6552b004a7e03
-        type: string
-      Locator:
-        description: Operation reference code
-        example: 0phtqs7
-        maxLength: 30
-        minLength: 1
-        type: string
-      PurchaseValue:
-        description: Total amount paid
-        example: 0.017967071
-        minimum: 0.01
-        type: number
-      TransactionID:
-        description: Unique transaction identifier
-        example: 79B29Ecb61EC9F7d59ab7b77
-        pattern: ^[0-9a-fA-F]{24}$
-        type: string
-    required:
-    - TransactionID
-    - Locator
-    - PurchaseValue
-    - Href
-    title: 'Mediatype identifier: application/vnd.pos.purchase+json; view=default'
-    type: object
   PurchasePayload:
     description: Detailed information regarding a POS purchase operation
     example:
-      ID: Id mollitia deleniti rem rerum fugiat.
-      Locator: "y"
-      PurchaseValue: 0.010328093
+      id: ""
+      locator: MPOS00123820-UAT-A02
+      purchase_value: 119.99
     properties:
-      ID:
-        example: Id mollitia deleniti rem rerum fugiat.
+      id:
+        example: ""
         type: string
-      Locator:
+      locator:
         description: Operation reference code
-        example: "y"
+        example: MPOS00123820-UAT-A02
         maxLength: 30
         minLength: 1
         type: string
-      PurchaseValue:
+      purchase_value:
         description: Total amount paid
-        example: 0.010328093
+        example: 119.99
         minimum: 0.01
         type: number
     required:
-    - Locator
-    - PurchaseValue
+    - locator
+    - purchase_value
     title: PurchasePayload
     type: object
   error:
@@ -102,8 +67,14 @@ definitions:
     type: object
 host: localhost:5001
 info:
+  contact:
+    name: psavelis
+    url: https://github.com/psavelis
   description: point of sale microservice
-  title: Point Of Sale API
+  license:
+    name: GPL-3.0
+    url: https://github.com/psavelis/goa-pos-poc/blob/master/LICENSE
+  title: Point Of Sale (POS)
   version: v1
 paths:
   /purchases/:
@@ -119,6 +90,7 @@ paths:
           $ref: '#/definitions/PurchasePayload'
       produces:
       - application/vnd.goa.error
+      - application/vnd.goa.error
       responses:
         "201":
           description: Resource created
@@ -129,8 +101,6 @@ paths:
               type: string
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/error'
         "409":
           description: A conflict arose from your request. (e.g. resource already
             exists)
@@ -156,16 +126,15 @@ paths:
         type: string
       produces:
       - application/vnd.goa.error
-      - application/vnd.pos.purchase+json
+      - application/vnd.goa.error
+      - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/Purchase'
+            $ref: '#/definitions/error'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/error'
         "404":
           description: Not Found
       schemes:
@@ -182,8 +151,6 @@ responses:
       X-Request-Id:
         pattern: '[a-f0-9]+'
         type: string
-  NotFound:
-    description: Not Found
 schemes:
 - http
 swagger: "2.0"

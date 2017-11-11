@@ -4,8 +4,17 @@ import . "github.com/goadesign/goa/design"
 import . "github.com/goadesign/goa/design/apidsl"
 
 var _ = API("pos", func() {
-	Title("Point Of Sale API")
+
+	Title("Point Of Sale (POS)")
 	Version("v1")
+	Contact(func() {
+		Name("psavelis")
+		URL("https://github.com/psavelis")
+	})
+	License(func() {
+		Name("GPL-3.0")
+		URL("https://github.com/psavelis/goa-pos-poc/blob/master/LICENSE")
+	})
 	Description("point of sale microservice")
 	Host("localhost:5001")
 	Scheme("http")
@@ -39,68 +48,68 @@ var _ = API("pos", func() {
 var PurchasePayload = Type("PurchasePayload", func() {
 	Description("Detailed information regarding a POS purchase operation")
 
-	Attribute("ID", func() {
-		Metadata("struct:tag:json", "id")
+	Attribute("id", func() {
 		Metadata("struct:tag:bson", "_id,omitempty")
+		Metadata("struct:field:name", "ID")
 		Metadata("struct:field:type", "bson.ObjectId", "gopkg.in/mgo.v2/bson")
-		Metadata("swagger:generate", "false")
+		Example("")
 	})
 
-	Attribute("Locator", String, "Operation reference code", func() {
-		Metadata("struct:tag:json", "locator")
+	Attribute("locator", String, "Operation reference code", func() {
+		Metadata("struct:field:name", "Locator")
 		Metadata("struct:tag:bson", "locator,omitempty")
-		Metadata("swagger:tag:json", "locator")
+
+		Example("MPOS00123820-UAT-A02")
 
 		MinLength(1)
 		MaxLength(30)
 	})
 
-	Attribute("PurchaseValue", Number, "Total amount paid", func() {
-		Metadata("struct:tag:json", "purchase_value")
+	Attribute("purchase_value", Number, "Total amount paid", func() {
+		Metadata("struct:field:name", "PurchaseValue")
 		Metadata("struct:tag:bson", "purchase_value,omitempty")
-		Metadata("swagger:tag:json", "purchase_value")
+
+		Example(119.99)
+
 		Minimum(0.01)
 	})
 
-	Required("Locator", "PurchaseValue")
+	Required("locator", "purchase_value")
 })
 
-var PurchaseMedia = MediaType("application/vnd.pos.purchase+json", func() {
+var PurchaseMedia = MediaType("application/json", func() {
 	TypeName("Purchase")
 	Reference(PurchasePayload)
 
 	Attributes(func() {
 
 		// Inherited attributes from PurchasePayload
-		Attribute("TransactionID", String, "Unique transaction identifier", func() {
-			Metadata("struct:tag:json", "transaction_id")
-			Metadata("swagger:tag:json", "transaction_id")
+		Attribute("transaction_id", String, "Unique transaction identifier", func() {
+			Metadata("struct:field:name", "TransactionID")
 			Metadata("struct:tag:bson", "_id,omitempty")
 			Pattern("^[0-9a-fA-F]{24}$")
 		})
-		Attribute("Locator", String, "Operation reference code", func() {
-			Metadata("struct:tag:json", "locator")
-			Metadata("swagger:tag:json", "locator")
+		Attribute("locator", String, "Operation reference code", func() {
+			Metadata("struct:field:name", "Locator")
 		})
 
-		Attribute("PurchaseValue", Number, "Total amount paid", func() {
-			Metadata("swagger:tag:json", "purchase_value")
+		Attribute("purchase_value", Number, "Total amount paid", func() {
+			Metadata("struct:field:name", "PurchaseValue")
 		})
 
-		Attribute("Href", String, "API href of Purchase", func() {
-			Example("/pos/v1/purchases/5a06839d42e6552b004a7e03")
-			Metadata("struct:tag:json", "href")
-			Metadata("swagger:tag:json", "href")
+		Attribute("href", String, "API href of Purchase", func() {
+			Example("pos/v1/purchases/5a06839d42e6552b004a7e03")
+			Metadata("struct:field:name", "Href")
 		})
 
-		Required("TransactionID", "Locator", "PurchaseValue", "Href")
+		Required("transaction_id", "locator", "purchase_value")
 	})
 
 	View("default", func() {
-		Attribute("TransactionID")
-		Attribute("Locator")
-		Attribute("PurchaseValue")
-		Attribute("Href")
+		Attribute("transaction_id")
+		Attribute("locator")
+		Attribute("purchase_value")
+		Attribute("href")
 	})
 })
 
@@ -113,8 +122,9 @@ var _ = Resource("Purchase", func() {
 		Description("creates a purchase")
 		Routing(POST("/"))
 		Payload(PurchasePayload)
+
 		Response(Created, "^/purchases/[A-Za-z0-9_.]+$")
-		Response(BadRequest, ErrorMedia)
+		Response(BadRequest)
 		Response(Conflict)
 	})
 
@@ -128,7 +138,7 @@ var _ = Resource("Purchase", func() {
 		})
 
 		Response(OK, PurchaseMedia)
+		Response(BadRequest)
 		Response(NotFound)
-		Response(BadRequest, ErrorMedia)
 	})
 })

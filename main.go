@@ -16,6 +16,10 @@ import (
 // DataStore holds mgo's session pool
 
 func main() {
+
+	// REVIEW: workaround
+	goa.ErrorMediaIdentifier = "application/json"
+
 	// Create service
 	service := goa.New("pos")
 
@@ -29,7 +33,7 @@ func main() {
 	tlsConfig := &tls.Config{}
 	tlsConfig.InsecureSkipVerify = true
 
-	dialInfo, err := mgo.ParseURL("mongodb://x:x@development-shard-00-00-ozch3.mongodb.net:27017,development-shard-00-01-ozch3.mongodb.net:27017,development-shard-00-02-ozch3.mongodb.net:27017/test?replicaSet=development-shard-0&authSource=admin")
+	dialInfo, err := mgo.ParseURL("mongodb://psavelis:psavelis@development-shard-00-00-ozch3.mongodb.net:27017,development-shard-00-01-ozch3.mongodb.net:27017,development-shard-00-02-ozch3.mongodb.net:27017/test?replicaSet=development-shard-0&authSource=admin")
 
 	dialInfo.DialServer = func(addr *mgo.ServerAddr) (net.Conn, error) {
 		conn, err := tls.Dial("tcp", addr.String(), tlsConfig)

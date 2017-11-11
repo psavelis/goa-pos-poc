@@ -49,9 +49,9 @@ func (ctx *CreatePurchaseContext) BadRequest(r error) error {
 }
 
 // Conflict sends a HTTP response with status code 409.
-func (ctx *CreatePurchaseContext) Conflict() error {
-	ctx.ResponseData.WriteHeader(409)
-	return nil
+func (ctx *CreatePurchaseContext) Conflict(r error) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
+	return ctx.ResponseData.Service.Send(ctx.Context, 409, r)
 }
 
 // ShowPurchaseContext provides the Purchase show action context.
@@ -84,7 +84,7 @@ func NewShowPurchaseContext(ctx context.Context, r *http.Request, service *goa.S
 
 // OK sends a HTTP response with status code 200.
 func (ctx *ShowPurchaseContext) OK(r *Purchase) error {
-	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.pos.purchase+json")
+	ctx.ResponseData.Header().Set("Content-Type", "")
 	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
 }
 
@@ -95,7 +95,7 @@ func (ctx *ShowPurchaseContext) BadRequest(r error) error {
 }
 
 // NotFound sends a HTTP response with status code 404.
-func (ctx *ShowPurchaseContext) NotFound() error {
-	ctx.ResponseData.WriteHeader(404)
-	return nil
+func (ctx *ShowPurchaseContext) NotFound(r error) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
+	return ctx.ResponseData.Service.Send(ctx.Context, 404, r)
 }

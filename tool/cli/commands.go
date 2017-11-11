@@ -59,9 +59,9 @@ func RegisterCommands(app *cobra.Command, c *client.Client) {
 Payload example:
 
 {
-   "ID": "Id mollitia deleniti rem rerum fugiat.",
-   "Locator": "y",
-   "PurchaseValue": 0.010328092863740972
+   "id": "",
+   "locator": "MPOS00123820-UAT-A02",
+   "purchase_value": 119.99
 }`,
 		RunE: func(cmd *cobra.Command, args []string) error { return tmp1.Run(c, args) },
 	}
