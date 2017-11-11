@@ -1,4 +1,4 @@
-package main
+package controllers
 
 import (
 	"github.com/goadesign/goa"
@@ -12,8 +12,13 @@ type PurchaseController struct {
 	*goa.Controller
 }
 
+var (
+	Database *mgo.Database
+)
+
 // NewPurchaseController creates a Purchase controller.
-func NewPurchaseController(service *goa.Service) *PurchaseController {
+func NewPurchaseController(service *goa.Service, database *mgo.Database) *PurchaseController {
+	Database = database
 	return &PurchaseController{Controller: service.NewController("PurchaseController")}
 }
 

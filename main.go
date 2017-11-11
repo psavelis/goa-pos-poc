@@ -9,13 +9,11 @@ import (
 	"github.com/goadesign/goa"
 	"github.com/goadesign/goa/middleware"
 	"github.com/psavelis/goa-pos-poc/app"
+	"github.com/psavelis/goa-pos-poc/controllers"
 	mgo "gopkg.in/mgo.v2"
 )
 
 // DataStore holds mgo's session pool
-var (
-	Database *mgo.Database
-)
 
 func main() {
 	// Create service
@@ -47,7 +45,7 @@ func main() {
 	session.SetMode(mgo.Monotonic, true)
 
 	// services-pos database
-	Database = session.DB("services-pos")
+	database := session.DB("services-pos")
 
 	//Database.C("Purchase").RemoveAll(bson.M{})
 
@@ -60,16 +58,16 @@ func main() {
 		Sparse:     true,
 	}
 
-	err = Database.C("Purchase").EnsureIndex(index)
+	err = database.C("Purchase").EnsureIndex(index)
 	if err != nil {
 		panic(err)
 	}
 
 	// Mount "Purchase" controller
-	c := NewPurchaseController(service)
+	c := controllers.NewPurchaseController(service, database)
 	app.MountPurchaseController(service, c)
 
-	cs := NewSwaggerController(service)
+	cs := controllers.NewSwaggerController(service)
 	app.MountSwaggerController(service, cs)
 
 	// Start service
