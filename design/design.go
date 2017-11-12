@@ -51,6 +51,12 @@ var PurchasePayload = Type("PurchasePayload", func() {
 		Example("")
 	})
 
+	Attribute("status", String, func() {
+		Metadata("struct:tag:bson", "status,omitempty")
+		Metadata("struct:field:name", "Status")
+		Example("")
+	})
+
 	Attribute("locator", String, "Operation reference code", func() {
 		Metadata("struct:field:name", "Locator")
 		Metadata("struct:tag:bson", "locator,omitempty")
@@ -96,19 +102,25 @@ var PurchaseMedia = MediaType("application/json", func() {
 			Metadata("struct:field:name", "PurchaseValue")
 		})
 
+		Attribute("status", String, "Purchase status", func() {
+			Metadata("struct:tag:json", "status")
+			Metadata("struct:field:name", "Status")
+		})
+
 		Attribute("href", String, "API href of Purchase", func() {
 			Example("/pos/v1/purchases/5a06839d42e6552b004a7e03")
 			Metadata("struct:tag:json", "href")
 			Metadata("struct:field:name", "Href")
 		})
 
-		Required("transaction_id", "locator", "purchase_value", "href")
+		Required("transaction_id", "locator", "purchase_value", "status", "href")
 	})
 
 	View("default", func() {
 		Attribute("transaction_id")
 		Attribute("locator")
 		Attribute("purchase_value")
+		Attribute("status")
 		Attribute("href")
 	})
 })

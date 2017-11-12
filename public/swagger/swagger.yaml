@@ -8,6 +8,7 @@ definitions:
       href: /pos/v1/purchases/5a06839d42e6552b004a7e03
       locator: MPOS00123820-UAT-A02
       purchase_value: 119.99
+      status: ""
       transaction_id: 79B29Ecb61EC9F7d59ab7b77
     properties:
       href:
@@ -25,6 +26,10 @@ definitions:
         example: 119.99
         minimum: 0.01
         type: number
+      status:
+        description: Purchase status
+        example: ""
+        type: string
       transaction_id:
         description: Unique transaction identifier
         example: 79B29Ecb61EC9F7d59ab7b77
@@ -34,6 +39,7 @@ definitions:
     - transaction_id
     - locator
     - purchase_value
+    - status
     - href
     title: 'Mediatype identifier: application/json; view=default'
     type: object
@@ -43,6 +49,7 @@ definitions:
       id: ""
       locator: MPOS00123820-UAT-A02
       purchase_value: 119.99
+      status: ""
     properties:
       id:
         example: ""
@@ -58,6 +65,9 @@ definitions:
         example: 119.99
         minimum: 0.01
         type: number
+      status:
+        example: ""
+        type: string
     required:
     - locator
     - purchase_value

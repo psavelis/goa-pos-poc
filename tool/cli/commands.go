@@ -68,7 +68,8 @@ Payload example:
 {
    "id": "",
    "locator": "MPOS00123820-UAT-A02",
-   "purchase_value": 119.99
+   "purchase_value": 119.99,
+   "status": ""
 }`,
 		RunE: func(cmd *cobra.Command, args []string) error { return tmp1.Run(c, args) },
 	}

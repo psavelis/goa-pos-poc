@@ -27,9 +27,15 @@ func NewPurchaseController(service *goa.Service, database *mgo.Database) *Purcha
 // Create runs the create action.
 func (c *PurchaseController) Create(ctx *app.CreatePurchaseContext) error {
 
+	// sets the document id
 	newID := bson.NewObjectId()
-
 	ctx.Payload.ID = &newID
+
+	// sets initial purchase status
+	newStatus := new(string)
+	*newStatus = "CREATED"
+
+	ctx.Payload.Status = newStatus
 
 	// reuse from connection pool
 	session := Database.Session.Copy()

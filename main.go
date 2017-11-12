@@ -15,6 +15,9 @@ import (
 	mgo "gopkg.in/mgo.v2"
 )
 
+type Database struct {
+}
+
 func main() {
 
 	// REVIEW: goa media types

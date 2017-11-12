@@ -25,6 +25,8 @@ type Purchase struct {
 	Locator string `bson:"locator,omitempty" json:"locator"`
 	// Total amount paid
 	PurchaseValue float64 `bson:"purchase_value,omitempty" json:"purchase_value"`
+	// Purchase status
+	Status string `bson:"status,omitempty" json:"status"`
 	// Unique transaction identifier
 	TransactionID string `bson:"_id,omitempty" json:"transaction_id"`
 }
@@ -38,6 +40,9 @@ func (mt *Purchase) Validate() (err error) {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "locator"))
 	}
 
+	if mt.Status == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "status"))
+	}
 	if mt.Href == "" {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "href"))
 	}

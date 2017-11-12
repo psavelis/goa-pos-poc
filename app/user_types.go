@@ -23,6 +23,7 @@ type purchasePayload struct {
 	Locator *string `bson:"locator,omitempty" json:"locator"`
 	// Total amount paid
 	PurchaseValue *float64 `bson:"purchase_value,omitempty" json:"purchase_value"`
+	Status        *string  `bson:"status,omitempty" json:"status"`
 }
 
 // Validate validates the purchasePayload type instance.
@@ -63,6 +64,9 @@ func (ut *purchasePayload) Publicize() *PurchasePayload {
 	if ut.PurchaseValue != nil {
 		pub.PurchaseValue = *ut.PurchaseValue
 	}
+	if ut.Status != nil {
+		pub.Status = ut.Status
+	}
 	return &pub
 }
 
@@ -73,6 +77,7 @@ type PurchasePayload struct {
 	Locator string `bson:"locator,omitempty" json:"locator"`
 	// Total amount paid
 	PurchaseValue float64 `bson:"purchase_value,omitempty" json:"purchase_value"`
+	Status        *string `bson:"status,omitempty" json:"status"`
 }
 
 // Validate validates the PurchasePayload type instance.
