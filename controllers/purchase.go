@@ -14,10 +14,12 @@ type PurchaseController struct {
 
 var (
 	Database *mgo.Database
+	Service  *goa.Service
 )
 
 // NewPurchaseController creates a Purchase controller.
 func NewPurchaseController(service *goa.Service, database *mgo.Database) *PurchaseController {
+	Service = service
 	Database = database
 	return &PurchaseController{Controller: service.NewController("PurchaseController")}
 }
@@ -29,21 +31,30 @@ func (c *PurchaseController) Create(ctx *app.CreatePurchaseContext) error {
 
 	ctx.Payload.ID = &newID
 
+	// reuse from connection pool
 	session := Database.Session.Copy()
 	defer session.Close()
 
+	// inserts the document into Purchase collection
 	err := session.DB("services-pos").C("Purchase").Insert(ctx.Payload)
 
+	// ops! something went wrong...
 	if err != nil {
 		if mgo.IsDup(err) {
+			// purchase already exists. (HTTP 409 - Conflict)
 			return ctx.Conflict()
 		}
-		// TODO: log
+
+		Service.LogError(err.Error())
+
+		// HTTP 500 - Internal Server Error
 		return ctx.Err()
 	}
 
+	// indicates the new URI for the created resource (e.g. /purchases/{:id})
 	ctx.ResponseData.Header().Set("Location", app.PurchaseHref(newID.Hex()))
 
+	// HTTP 201 - Created
 	return ctx.Created()
 }
 
