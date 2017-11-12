@@ -11,8 +11,8 @@ var _ = API("pos", func() {
 		Name("GPL-3.0")
 		URL("https://github.com/psavelis/goa-pos-poc/blob/master/LICENSE")
 	})
-	Description("point of sale microservice")
-	Host("goa-pos-poc.herokuapp.com")
+	Description("go microservice")
+	Host("psavelis.herokuapp.com")
 	Scheme("https")
 	BasePath("/pos/v1")
 
@@ -81,20 +81,24 @@ var PurchaseMedia = MediaType("application/json", func() {
 
 		// Inherited attributes from PurchasePayload
 		Attribute("transaction_id", String, "Unique transaction identifier", func() {
+			Metadata("struct:tag:json", "transaction_id")
 			Metadata("struct:field:name", "TransactionID")
 			Metadata("struct:tag:bson", "_id,omitempty")
 			Pattern("^[0-9a-fA-F]{24}$")
 		})
 		Attribute("locator", String, "Operation reference code", func() {
+			Metadata("struct:tag:json", "locator")
 			Metadata("struct:field:name", "Locator")
 		})
 
 		Attribute("purchase_value", Number, "Total amount paid", func() {
+			Metadata("struct:tag:json", "purchase_value")
 			Metadata("struct:field:name", "PurchaseValue")
 		})
 
 		Attribute("href", String, "API href of Purchase", func() {
-			Example("pos/v1/purchases/5a06839d42e6552b004a7e03")
+			Example("/pos/v1/purchases/5a06839d42e6552b004a7e03")
+			Metadata("struct:tag:json", "href")
 			Metadata("struct:field:name", "Href")
 		})
 
@@ -137,6 +141,36 @@ var _ = Resource("Purchase", func() {
 		Response(BadRequest)
 		Response(NotFound)
 	})
+
+	// Action("list", func() {
+	// 	Description("retrieves a purchase")
+	// 	Routing(GET("/:transaction_id"))
+	// 	Params(func() {
+	// 		Param("_limit", String, "Unique transaction identifier", func() {
+	// 			Pattern("^[0-9a-fA-F]{24}$")
+	// 		})
+	// 	})
+
+	// 	Response(OK, PurchaseMedia)
+	// 	Response(BadRequest)
+	// 	Response(NotFound)
+	// })
+})
+
+var _ = Resource("public", func() {
+	Metadata("swagger:generate", "false")
+	Origin("*", func() {
+		Methods("GET", "OPTIONS")
+	})
+	Files("/ui", "public/html/index.html")
+})
+
+var _ = Resource("js", func() {
+	Metadata("swagger:generate", "false")
+	Origin("*", func() {
+		Methods("GET", "OPTIONS")
+	})
+	Files("/js/*filepath", "public/js")
 })
 
 var _ = Resource("swagger", func() {
@@ -145,5 +179,5 @@ var _ = Resource("swagger", func() {
 	Origin("*", func() {
 		Methods("GET", "OPTIONS")
 	})
-	Files("/swagger.json", "swagger/swagger.json")
+	Files("/swagger.json", "public/swagger/swagger.json")
 })

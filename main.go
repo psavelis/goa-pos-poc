@@ -80,11 +80,17 @@ func main() {
 	}
 
 	// Mount "Purchase" controller
-	c := controllers.NewPurchaseController(service, database)
-	app.MountPurchaseController(service, c)
+	purchaseController := controllers.NewPurchaseController(service, database)
+	app.MountPurchaseController(service, purchaseController)
 
-	cs := controllers.NewSwaggerController(service)
-	app.MountSwaggerController(service, cs)
+	swaggerController := controllers.NewSwaggerController(service)
+	app.MountSwaggerController(service, swaggerController)
+
+	publicController := controllers.NewPublicController(service)
+	app.MountPublicController(service, publicController)
+
+	jsController := controllers.NewJsController(service)
+	app.MountJsController(service, jsController)
 
 	port := os.Getenv("PORT")
 

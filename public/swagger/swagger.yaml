@@ -5,14 +5,14 @@ definitions:
   Purchase:
     description: Purchase media type (default view)
     example:
-      href: pos/v1/purchases/5a06839d42e6552b004a7e03
+      href: /pos/v1/purchases/5a06839d42e6552b004a7e03
       locator: MPOS00123820-UAT-A02
       purchase_value: 119.99
       transaction_id: 79B29Ecb61EC9F7d59ab7b77
     properties:
       href:
         description: API href of Purchase
-        example: pos/v1/purchases/5a06839d42e6552b004a7e03
+        example: /pos/v1/purchases/5a06839d42e6552b004a7e03
         type: string
       locator:
         description: Operation reference code
@@ -63,9 +63,9 @@ definitions:
     - purchase_value
     title: PurchasePayload
     type: object
-host: goa-pos-poc.herokuapp.com
+host: psavelis.herokuapp.com
 info:
-  description: point of sale microservice
+  description: go microservice
   license:
     name: GPL-3.0
     url: https://github.com/psavelis/goa-pos-poc/blob/master/LICENSE
