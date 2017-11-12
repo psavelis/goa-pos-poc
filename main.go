@@ -4,7 +4,9 @@ package main
 
 import (
 	"crypto/tls"
+	"fmt"
 	"net"
+	"os"
 
 	"github.com/goadesign/goa"
 	"github.com/goadesign/goa/middleware"
@@ -13,11 +15,9 @@ import (
 	mgo "gopkg.in/mgo.v2"
 )
 
-// DataStore holds mgo's session pool
-
 func main() {
 
-	// REVIEW: workaround
+	// REVIEW: goa media types
 	goa.ErrorMediaIdentifier = "application/json"
 
 	// Create service
@@ -33,7 +33,19 @@ func main() {
 	tlsConfig := &tls.Config{}
 	tlsConfig.InsecureSkipVerify = true
 
-	dialInfo, err := mgo.ParseURL("mongodb://psavelis:psavelis@development-shard-00-00-ozch3.mongodb.net:27017,development-shard-00-01-ozch3.mongodb.net:27017,development-shard-00-02-ozch3.mongodb.net:27017/test?replicaSet=development-shard-0&authSource=admin")
+	mgoUser := os.Getenv("MONGO_USR")
+
+	if mgoUser == "" {
+		service.LogError("$MONGO_USR must be set")
+	}
+
+	mgoPassword := os.Getenv("MONGO_PWD")
+
+	if mgoPassword == "" {
+		service.LogError("$MONGO_PWD must be set")
+	}
+
+	dialInfo, err := mgo.ParseURL(fmt.Sprintf("mongodb://%s:%s@development-shard-00-00-ozch3.mongodb.net:27017,development-shard-00-01-ozch3.mongodb.net:27017,development-shard-00-02-ozch3.mongodb.net:27017/test?replicaSet=development-shard-0&authSource=admin", mgoUser, mgoPassword))
 
 	dialInfo.DialServer = func(addr *mgo.ServerAddr) (net.Conn, error) {
 		conn, err := tls.Dial("tcp", addr.String(), tlsConfig)
@@ -74,8 +86,14 @@ func main() {
 	cs := controllers.NewSwaggerController(service)
 	app.MountSwaggerController(service, cs)
 
+	port := os.Getenv("PORT")
+
+	if port == "" {
+		service.LogError("$PORT must be set")
+	}
+
 	// Start service
-	if err := service.ListenAndServe(":5000"); err != nil {
+	if err := service.ListenAndServe(fmt.Sprintf(":%s", port)); err != nil {
 		service.LogError("startup", "err", err)
 	}
 }
