@@ -109,3 +109,6 @@ Inconsistencies found in the ongoing request may be sent back to the initiator w
 	"detail": "[Jfhx633K] 400 invalid_request: length of request.locator must be greater than or equal to 1 but got value \"\" (len=0)"
 }
 ````
+
+## Heroku's application log: server request info
+`2017-11-12T20:31:57.888292+00:00 app[web.1]: 2017/11/12 20:31:57 [INFO] started req_id=0f89abd1-20f2-44c2-92b5-df4c6f2343d7 POST=/pos/v1/purchases/ from=201.6.135.39 ctrl=PurchaseController action=create`.
