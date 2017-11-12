@@ -20,6 +20,3 @@ Now that the design is done, let's run `goagen` on the design package:
 cd $GOPATH/src/goa-poc-pos
 goagen bootstrap -d goa-poc-pos/design
 ```
-
-### Try out...
-[Swagger 2.0 UI](http://swagger.goa.design/?url=psavelis%2Fgoa-pos-poc%2Fdesign)
