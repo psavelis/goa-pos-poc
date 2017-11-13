@@ -15,9 +15,6 @@ import (
 	mgo "gopkg.in/mgo.v2"
 )
 
-type Database struct {
-}
-
 func main() {
 
 	// REVIEW: goa media types
@@ -32,40 +29,10 @@ func main() {
 	service.Use(middleware.ErrorHandler(service, true))
 	service.Use(middleware.Recover())
 
-	// MongoDB (Atlas) setup
-	tlsConfig := &tls.Config{}
-	tlsConfig.InsecureSkipVerify = true
-
-	mgoUser := os.Getenv("MONGO_USR")
-
-	if mgoUser == "" {
-		service.LogError("$MONGO_USR must be set")
-	}
-
-	mgoPassword := os.Getenv("MONGO_PWD")
-
-	if mgoPassword == "" {
-		service.LogError("$MONGO_PWD must be set")
-	}
-
-	dialInfo, err := mgo.ParseURL(fmt.Sprintf("mongodb://%s:%s@development-shard-00-00-ozch3.mongodb.net:27017,development-shard-00-01-ozch3.mongodb.net:27017,development-shard-00-02-ozch3.mongodb.net:27017/test?replicaSet=development-shard-0&authSource=admin", mgoUser, mgoPassword))
-
-	dialInfo.DialServer = func(addr *mgo.ServerAddr) (net.Conn, error) {
-		conn, err := tls.Dial("tcp", addr.String(), tlsConfig)
-		return conn, err
-	}
-
-	session, err := mgo.DialWithInfo(dialInfo)
-	if err != nil {
-		panic(err)
-	}
+	session := getDatabase(service)
 	defer session.Close()
 
-	session.SetMode(mgo.Monotonic, true)
-
-	// services-pos database
-	database := session.DB("services-pos")
-
+	database := session.Clone().DB("services-pos")
 	//Database.C("Purchase").RemoveAll(bson.M{})
 
 	// Purchases collection index
@@ -77,7 +44,7 @@ func main() {
 		Sparse:     true,
 	}
 
-	err = database.C("Purchase").EnsureIndex(index)
+	err := database.C("Purchase").EnsureIndex(index)
 	if err != nil {
 		panic(err)
 	}
@@ -105,4 +72,39 @@ func main() {
 	if err := service.ListenAndServe(fmt.Sprintf(":%s", port)); err != nil {
 		service.LogError("startup", "err", err)
 	}
+}
+
+func getDatabase(service *goa.Service) (db *mgo.Session) {
+	// MongoDB (Atlas) setup
+	tlsConfig := &tls.Config{}
+	tlsConfig.InsecureSkipVerify = true
+
+	mgoUser := os.Getenv("MONGO_USR")
+
+	if mgoUser == "" {
+		service.LogError("$MONGO_USR must be set")
+	}
+
+	mgoPassword := os.Getenv("MONGO_PWD")
+
+	if mgoPassword == "" {
+		service.LogError("$MONGO_PWD must be set")
+	}
+
+	dialInfo, err := mgo.ParseURL(fmt.Sprintf("mongodb://%s:%s@development-shard-00-00-ozch3.mongodb.net:27017,development-shard-00-01-ozch3.mongodb.net:27017,development-shard-00-02-ozch3.mongodb.net:27017/test?replicaSet=development-shard-0&authSource=admin", mgoUser, mgoPassword))
+
+	dialInfo.DialServer = func(addr *mgo.ServerAddr) (net.Conn, error) {
+		conn, err := tls.Dial("tcp", addr.String(), tlsConfig)
+		return conn, err
+	}
+
+	session, err := mgo.DialWithInfo(dialInfo)
+	if err != nil {
+		panic(err)
+	}
+
+	session.SetMode(mgo.Monotonic, true)
+
+	// services-pos database
+	return session
 }
