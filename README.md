@@ -40,20 +40,23 @@ func (c *PurchaseController) Create(ctx *app.CreatePurchaseContext) error {
 	// inserts the document into Purchase collection
 	err := session.DB("services-pos").C("Purchase").Insert(ctx.Payload)
 
-	// ops! something went wrong...
 	if err != nil {
+	
+		// duplicated record?
 		if mgo.IsDup(err) {
-			// purchase already exists. (HTTP 409 - Conflict)
+		
+			// Then this purchase already exists. (HTTP 409 - Conflict)
 			return ctx.Conflict()
 		}
-
+		
+		// Ok, there is an error, log it ftw...
 		Service.LogError(err.Error())
 
 		// HTTP 500 - Internal Server Error
 		return ctx.Err()
 	}
 
-	// indicates the new URI for the created resource (e.g. /purchases/{:id})
+	// indicates the new URI for the new resource (e.g. /purchases/{:id})
     ctx.ResponseData.Header().Set("Location", app.PurchaseHref(newID.Hex()))
 
 	// HTTP 201 - Created
